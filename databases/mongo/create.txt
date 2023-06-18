@@ -1,0 +1,39 @@
+use TaskHive
+db.createCollection("tasks", {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            required: ["key", "title", "description", "completed", "start_date", "deadline_date"],
+            properties: {
+                id: {
+                    bsonType: "objectId",
+                    description: "The task ID"
+                },
+                key: {
+                    bsonType: "string",
+                    description: "The key of the user who owns the task"
+                },
+                title: {
+                    bsonType: "string",
+                    description: "The task title"
+                },
+                description: {
+                    bsonType: "string",
+                    description: "The task description"
+                },
+                completed: {
+                    bsonType: "bool",
+                    description: "Whether the task is completed or not"
+                },
+                start_date: {
+                    bsonType: "date",
+                    description: "The start date of the task"
+                },
+                deadline_date: {
+                    bsonType: "date",
+                    description: "The deadline date of the task"
+                }
+            }
+        }
+    }
+});
