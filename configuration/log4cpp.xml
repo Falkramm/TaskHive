@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4cpp SYSTEM "log4cpp.dtd">
+<log4cpp>
+    <appender name="file" type="log4cpp::FileAppender">
+        <param name="fileName" value="mylog.log"/>
+        <param name="append" value="true"/>
+        <layout type="log4cpp::BasicLayout"/>
+    </appender>
+
+    <appender name="console" type="log4cpp::OstreamAppender">
+        <param name="target" value="cout"/>
+        <layout type="log4cpp::BasicLayout"/>
+    </appender>
+
+    <category name="rootCategory" priority="DEBUG">
+        <appender-ref name="file"/>
+        <appender-ref name="console"/>
+    </category>
+</log4cpp>

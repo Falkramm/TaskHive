@@ -40,7 +40,6 @@ public:
         return shared_from_this();
     }
 
-    // Other overridden methods from pqxx::connection...
 
 private:
     std::shared_ptr<ConnectionPool> pool_;
@@ -70,12 +69,13 @@ public:
     }
 
     std::shared_ptr<PooledConnection> get_connection() {
+        std::cout << "Wait for connection\n";
         std::unique_lock<std::mutex> lock(mutex_);
-
+        std::cout << free_connections_.size() << '\n';
         while (free_connections_.empty()) {
             cv_.wait(lock);
         }
-
+        std::cout << "Empty connection\n";
         auto connection = free_connections_.front();
         free_connections_.pop();
         used_connections_.insert(connection);
