@@ -1,0 +1,14 @@
+//
+// Created by daniil on 6/24/23.
+//
+
+#ifndef TASKHIVE_POSTGRESQLDAOFACTORY_H
+#define TASKHIVE_POSTGRESQLDAOFACTORY_H
+
+
+class PostgreSQLDAOFactory {
+
+};
+
+
+#endif //TASKHIVE_POSTGRESQLDAOFACTORY_H
