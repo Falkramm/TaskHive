@@ -14,7 +14,7 @@ private:
 public:
     [[nodiscard]] std::string_view getId() const override;
 
-    void setId(std::string_view id_);
+    virtual void setId(std::string_view id_);
 
     Entity() = default;
 

@@ -7,7 +7,6 @@
 
 
 #include <string_view>
-
 class Serializable {
 public:
     static std::string_view getClass();
