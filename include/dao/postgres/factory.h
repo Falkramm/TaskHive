@@ -12,27 +12,24 @@
 #include <entity/User.h>
 #include <dao/postgres/postgresUserDAO.h>
 #include <dao/postgres/postgresTaskDAO.h>
-#include <dao/postgres/postgresFactory.h>
-class PostgresDAOFactory : public DAOFactory {
+class PostgresDAOFactory : public DAOFactory{
 private:
     std::shared_ptr<PooledConnection> connection;
-    std::unordered_map<std::string_view, std::unique_ptr<DaoCreator>> creators;
+    std::unordered_map<std::string_view, std::shared_ptr<DaoCreator>> creators;
 
 public:
     std::shared_ptr<PooledConnection> getConnection() {
         return connection;
     }
 
-    template<typename T, typename PK>
-    requires DerivedFromIdentified<T, PK>
-    GenericDAO<T, PK> getDao(const std::string &dtoClass) {
-        std::unique_ptr<DAOFactory::DaoCreator> creator;
+    boost::any getDao(const std::string &dtoClass)const override {
+        std::shared_ptr<DaoCreator> creator = nullptr;
         if (creators.contains(dtoClass)) {
-            creator = std::move(creators[dtoClass]);
+            creator = creators.find(dtoClass)->second;
         } else {
             throw PersistException("Dao object for " + dtoClass + " not found.");
         }
-        return creator->create<T, PK>(connection);
+        return creator->create(connection);
     }
     void close() {
         connection->close();
@@ -40,20 +37,20 @@ public:
 
     PostgresDAOFactory() {
         connection = ConnectionPool::getInstance()->getConnection();
-        creators[typeid(User).name()] =  std::make_unique<UserCreator>();
-        creators[typeid(Task).name()] =  std::make_unique<TaskCreator>();
+        creators[typeid(User).name()] =  std::make_shared<UserCreator>();
+        creators[typeid(Task).name()] =  std::make_shared<TaskCreator>();
     }
 protected:
     class UserCreator: public DaoCreator{
     public:
-        std::shared_ptr<PostgresUserDAO> create(std::shared_ptr<PostgresDAOFactory> factory, std::shared_ptr<PooledConnection> pooledConnection){
-            return std::make_shared<PostgresUserDAO>(factory, pooledConnection);
+        [[nodiscard]] boost::any create(std::shared_ptr<PooledConnection> pooledConnection)const override {
+            return std::make_shared<PostgresUserDAO>(pooledConnection);
         }
     };
     class TaskCreator: public DaoCreator{
     public:
-        std::shared_ptr<PostgresTaskDAO> create(std::shared_ptr<PostgresDAOFactory> factory, std::shared_ptr<PooledConnection> pooledConnection){
-            return std::make_shared<PostgresTaskDAO>(factory, pooledConnection);
+        [[nodiscard]] boost::any create(std::shared_ptr<PooledConnection> pooledConnection)const override{
+            return std::make_shared<PostgresTaskDAO>(pooledConnection);
         }
     };
 };

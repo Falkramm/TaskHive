@@ -3,7 +3,7 @@
 //
 #include "entity/Task.h"
 
-std::string_view Task::getKey() const {
+std::string Task::getKey() const {
     return key;
 }
 
@@ -11,7 +11,7 @@ void Task::setKey(std::string_view key) {
     Task::key = key;
 }
 
-std::string_view Task::getTitle() const {
+std::string Task::getTitle() const {
     return title;
 }
 
@@ -19,7 +19,7 @@ void Task::setTitle(std::string_view title) {
     Task::title = title;
 }
 
-std::string_view Task::getDescription() const {
+std::string Task::getDescription() const {
     return description;
 }
 

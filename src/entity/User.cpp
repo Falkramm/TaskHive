@@ -3,7 +3,7 @@
 //
 #include "entity/User.h"
 
-std::string_view User::getLogin() const {
+std::string User::getLogin() const {
     return login;
 }
 
@@ -11,7 +11,7 @@ void User::setLogin(std::string_view login) {
     User::login = login;
 }
 
-std::string_view User::getPassword() const {
+std::string User::getPassword() const {
     return password;
 }
 

@@ -46,17 +46,16 @@ private:
         return deleteQ;
     }
 
-    std::unique_ptr<Task> create() override {
-        std::unique_ptr<Task> user;
+    std::shared_ptr<Task> create() override {
+        std::shared_ptr<Task> user;
         return AbstractPQXXDao<Task, std::string>::persist(std::move(user));
     }
 public:
-    [[maybe_unused]] PostgresTaskDAO(std::shared_ptr<DAOFactory> parentFactory,
-                                     std::shared_ptr<PooledConnection> connection)
-            : AbstractPQXXDao<Task, std::string>(std::move(parentFactory), std::move(connection)) {}
+    [[maybe_unused]] PostgresTaskDAO(std::shared_ptr<PooledConnection> connection)
+            : AbstractPQXXDao<Task, std::string>(std::move(connection)) {}
 
-    std::vector<std::unique_ptr<Task>> parseResultSet(const pqxx::result &rs) const override {
-        std::vector<std::unique_ptr<Task>> result;
+    std::vector<std::shared_ptr<Task>> parseResultSet(const pqxx::result &rs) const override {
+        std::vector<std::shared_ptr<Task>> result;
         try {
             for (pqxx::row v: rs) {
                 PostgresTaskDAO::PersistTask task;
@@ -67,7 +66,7 @@ public:
                 task.setDescription(v.at("description").as<std::string>());
                 task.setStartDate(std::chrono::system_clock::from_time_t(v.at("startdate").as<int>()));
                 task.setDeadlineDate(std::chrono::system_clock::from_time_t(v.at("deadline").as<int>()));
-                result.emplace_back(std::make_unique<Task>(task));
+                result.emplace_back(std::make_shared<Task>(task));
             }
         } catch (std::exception e) {
             throw PersistException(e);
@@ -75,7 +74,7 @@ public:
         return result;
     }
 protected:
-    void prepareStatementForInsert(pqxx::prepare::invocation &invocation, std::unique_ptr<Task> object) const override {
+    void prepareStatementForInsert(pqxx::prepare::invocation &invocation, std::shared_ptr<Task> object) const override {
         try {
             invocation(object->getKey());
             invocation(object->getTitle());
@@ -88,7 +87,7 @@ protected:
         }
     }
 
-    void prepareStatementForUpdate(pqxx::prepare::invocation &invocation, std::unique_ptr<Task> object) const override {
+    void prepareStatementForUpdate(pqxx::prepare::invocation &invocation, std::shared_ptr<Task> object) const override {
         try {
             invocation(object->getKey());
             invocation(object->getTitle());
@@ -102,9 +101,9 @@ protected:
         }
     }
 public:
-    std::unique_ptr<Task> getByUser(const std::unique_ptr<User> user) {
+    std::shared_ptr<Task> getByUser(const std::shared_ptr<User> user) {
         try {
-            std::vector<std::unique_ptr<Task>> list;
+            std::vector<std::shared_ptr<Task>> list;
             const std::string sql = getSelectQuery() + " WHERE key = $1";//TODO convert login to hash key;
             pqxx::work txn(*connection);
             pqxx::result rs = txn.exec_params(sql, user->getLogin());

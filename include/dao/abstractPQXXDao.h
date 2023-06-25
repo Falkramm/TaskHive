@@ -4,7 +4,7 @@
 
 #ifndef TASKHIVE_ABSTRACTPQXXDAO_H
 #define TASKHIVE_ABSTRACTPQXXDAO_H
-
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 #include <pqxx/pqxx>
 #include <utility>
@@ -58,26 +58,26 @@ public:
      */
 protected:
 
-    virtual std::vector<std::unique_ptr<T>> parseResultSet(const pqxx::result &) const = 0;
+    virtual std::vector<std::shared_ptr<T>> parseResultSet(const pqxx::result &) const = 0;
 
     /**
      * Устанавливает аргументы insert запроса в соответствии со значением полей объекта object.
      */
 
-    virtual void prepareStatementForInsert(pqxx::prepare::invocation &, std::unique_ptr<T> object) const = 0;
+    virtual void prepareStatementForInsert(pqxx::prepare::invocation &, std::shared_ptr<T> object) const = 0;
 
     /**
      * Устанавливает аргументы update запроса в соответствии со значением полей объекта object.
      */
 
-    virtual void prepareStatementForUpdate(pqxx::prepare::invocation &, std::unique_ptr<T> object)const = 0;
-    std::shared_ptr<DAOFactory> parentFactory;
+    virtual void prepareStatementForUpdate(pqxx::prepare::invocation &, std::shared_ptr<T> object)const = 0;
+//    std::shared_ptr<DAOFactory> parentFactory;
     std::shared_ptr<PooledConnection> connection;
 
 public:
-    std::unique_ptr<T> getByPrimaryKey(const PK &key) override{
+    std::shared_ptr<T> getByPrimaryKey(const PK &key) override{
         try {
-            std::vector<std::unique_ptr<T>> list;
+            std::vector<std::shared_ptr<T>> list;
             const std::string sql = getSelectQuery() + " WHERE id = $1";
             pqxx::work txn(*connection);
             pqxx::result rs = txn.exec_params(sql, key);
@@ -93,20 +93,24 @@ public:
             throw PersistException(e.what());
         }
     }
-    std::vector<std::unique_ptr<T>> getAll() override{
+    std::vector<std::shared_ptr<T>> getAll() override{
         try {
-            std::vector<std::unique_ptr<T>> list;
+            std::cout << "Start get All\n";
+            std::vector<std::shared_ptr<T>> list;
             const std::string sql = getSelectAllQuery();
+            std::cout << "SQL: " << sql << '\n';
             pqxx::work txn(*connection);
             pqxx::result rs = txn.exec(sql);
+            std::cout << "Exec\n";
             list = parseResultSet(rs);
+            std::cout << "Parsed\n";
             return list;
         } catch (const std::exception& e) {
             throw PersistException(e.what());
         }
     }
 
-    std::unique_ptr<T> persist(std::unique_ptr<T> object) override{
+    std::shared_ptr<T> persist(std::shared_ptr<T> object) override{
         if (!object->getId().empty()) {
             throw PersistException("Object is already persisted.");
         }
@@ -124,10 +128,8 @@ public:
             // Получаем только что вставленную запись
             const std::string selectSql = getSelectQuery() + " WHERE id = lastval();";
             pqxx::result selectRs = txn.exec(selectSql);
-            std::vector<T> list;
-            for (const auto& row : selectRs) {
-                list.emplace_back(parseRow<T>(row));
-            }
+            std::vector<std::shared_ptr<T>> list;
+            list = parseResultSet(selectRs);
             if (list.empty() || list.size() != 1) {
                 throw PersistException("Exception on findByPrimaryKey new persist data.");
             }
@@ -136,7 +138,7 @@ public:
             throw PersistException(e.what());
         }
     }
-    void update(std::unique_ptr<T> object) override{
+    void update(std::shared_ptr<T> object) override{
         try {
 
             // Update the record
@@ -154,7 +156,7 @@ public:
         }
     }
 
-    void remove(std::unique_ptr<T> object) override {
+    void remove(std::shared_ptr<T> object) override {
         try {
             // Check if the object is already persisted
             if (object->getId().empty()) {
@@ -175,8 +177,7 @@ public:
     }
 
 public:
-    AbstractPQXXDao(std::shared_ptr<DAOFactory> parentFactory, std::shared_ptr<PooledConnection> connection): parentFactory(std::move(parentFactory)),
-                                                                                          connection(std::move(connection)) {}
+    AbstractPQXXDao(std::shared_ptr<PooledConnection> connection): connection(std::move(connection)) {}
 };
 
 

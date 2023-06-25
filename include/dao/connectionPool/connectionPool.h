@@ -51,16 +51,16 @@ log4cpp::Category &PooledConnection::logger_ = log4cpp::Category::getInstance("P
 
 
 class ConnectionPool : public std::enable_shared_from_this<ConnectionPool> {
-protected:
+public:
     static std::shared_ptr<ConnectionPool> instance;
     ConnectionPool() = default;
-//    ConnectionPool(std::string_view connection_string, int pool_size)
-//            : connection_string_(connection_string), pool_size_(pool_size) {
-//        logger_.debug(
-//                "Initializing ConnectionPool with connection string: " + static_cast<std::string>(connection_string) +
-//                " and pool size: " +
-//                std::to_string(pool_size));
-//    }
+    ConnectionPool(std::string_view connection_string, int pool_size)
+            : connection_string_(connection_string), pool_size_(pool_size) {
+        logger_.debug(
+                "Initializing ConnectionPool with connection string: " + static_cast<std::string>(connection_string) +
+                " and pool size: " +
+                std::to_string(pool_size));
+    }
 
 public:
     void setFreeConnections(const std::queue<std::shared_ptr<PooledConnection>> &freeConnections) {
@@ -79,17 +79,21 @@ public:
         return instance;
     }
 
-    void setConnectionString(const std::string &connectionString);
+    void setConnectionString(std::string_view connectionString){
+        this->connection_string_ = connectionString;
+    }
 
-    void setPoolSize(int poolSize);
+    void setPoolSize(int poolSize){
+        this->pool_size_ = poolSize;
+    }
 
-    void init(std::string_view connection_string, int pool_size) {
-        setConnectionString(connection_string_);
+    void init(std::string_view connection_string = "host=localhost port=5432 dbname=postgres user=root password=root", int pool_size = 10) {
+        setConnectionString(connection_string);
         setPoolSize(pool_size);
-        for (int i = 0; i < instance->pool_size_; ++i) {
-            instance->free_connections_.push(instance->create_connection());
+        for (int i = 0; i < pool_size_; ++i) {
+            free_connections_.push(create_connection());
         }
-        logger_.debug("Initialized ConnectionPool with " + std::to_string(instance->pool_size_) + " connections");
+        logger_.debug("Initialized ConnectionPool with " + std::to_string(pool_size_) + " connections");
     }
 
     ~ConnectionPool() {
@@ -98,13 +102,10 @@ public:
     }
 
     std::shared_ptr<PooledConnection> getConnection() {
-        std::cout << "Wait for connection\n";
         std::unique_lock<std::mutex> lock(mutex_);
-        std::cout << free_connections_.size() << '\n';
         while (free_connections_.empty()) {
             cv_.wait(lock);
         }
-        std::cout << "Empty connection\n";
         auto connection = free_connections_.front();
         free_connections_.pop();
         used_connections_.insert(connection);
