@@ -8,7 +8,7 @@ int main(){
             ("host=localhost port=5432 dbname=postgres user=root password=root", 2);
     pool->init();
     std::cout << "Connected\n";
-    std::shared_ptr<PooledConnection> connection = pool->get_connection();
+    std::shared_ptr<PooledConnection> connection = pool->getConnection();
     std::cout << "Connected\n";
     pqxx::work work(*(connection->get_base_connection()));
     pqxx::result rs = work.exec("SELECT * FROM customers");

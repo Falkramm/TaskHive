@@ -6,7 +6,25 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 find_package(Boost REQUIRED)
 link_directories(/usr/lib/x86_64-linux-gnu/)
 include_directories(/usr/lib/x86_64-linux-gnu)
-add_executable(TaskHive main.cpp include/entity/Entity.h include/entity/User.h src/entity/Entity.cpp include/entity/Task.h src/entity/User.cpp src/entity/Task.cpp include/dao/connectionPool/connectionPool.h main.cpp include/dao/genericDao.h include/entity/identified.h include/entity/serializable.h include/dao/daoFactory.h include/dao/abstractPQXXDao.h include/dao/persistException.h include/dao/postgres/postgresdaoFactory.h include/dao/postgres/postgreUserDao.h)
+# Add executable and source files
+add_executable(TaskHive
+        main.cpp
+        include/entity/Entity.h
+        include/entity/serializable.h
+        include/entity/identified.h
+        include/entity/User.h
+        src/entity/Entity.cpp
+        include/entity/Task.h
+        src/entity/User.cpp
+        src/entity/Task.cpp
+        include/dao/connectionPool/connectionPool.h
+        include/dao/genericDao.h
+        include/dao/daoFactory.h
+        include/dao/abstractPQXXDao.h
+        include/dao/persistException.h
+        include/dao/postgres/postgresUserDAO.h
+        include/dao/postgres/postgresTaskDAO.h
+        include/dao/postgres/factory.h)
 target_link_libraries(TaskHive PRIVATE pqxx)
 target_link_libraries(TaskHive PRIVATE -llog4cpp)
 target_link_libraries(TaskHive PRIVATE Boost::boost)

@@ -15,16 +15,16 @@
 
 class DAOFactory {
 public:
-    virtual ~DAOFactory() {}
+    virtual ~DAOFactory() = default;
     class DaoCreator {
     public:
         template<typename T, typename PK>
         requires std::is_same<T, Identified<PK>>::value
-        GenericDAO<T, PK> create(PooledConnection context);
+        std::shared_ptr<GenericDAO<T, PK>> create(PooledConnection context);//TODO need to recode
     };
     template<typename T, typename PK>
     requires std::is_same<T, Identified<PK>>::value
-    std::shared_ptr<GenericDAO<T, PK>> getDAOInstance(PooledConnection &connection);
+    std::shared_ptr<GenericDAO<T, PK>> getDAO(PooledConnection &connection);//TODO need to recode
 };
 
 

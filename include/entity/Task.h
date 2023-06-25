@@ -11,15 +11,15 @@
 //"key", "title", "description", "completed", "start_date", "deadline_date"
 class Task : public Entity {
 public:
-    [[nodiscard]] std::string_view getKey() const;
+    [[nodiscard]] std::string getKey() const;
 
     void setKey(std::string_view key);
 
-    [[nodiscard]] std::string_view getTitle() const;
+    [[nodiscard]] std::string getTitle() const;
 
     void setTitle(std::string_view title);
 
-    [[nodiscard]] std::string_view getDescription() const;
+    [[nodiscard]] std::string getDescription() const;
 
     void setDescription(std::string_view description);
 
@@ -34,7 +34,7 @@ public:
     [[nodiscard]] const std::chrono::system_clock::time_point &getDeadlineDate() const;
 
     void setDeadlineDate(const std::chrono::system_clock::time_point &deadlineDate);
-
+    Task() = default;
 private:
     std::string key;
     std::string title;

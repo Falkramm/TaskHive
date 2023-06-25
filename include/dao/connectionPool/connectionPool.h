@@ -24,6 +24,7 @@ public:
         logger_.debug("PooledConnection constructor called");
     }
 
+
     virtual ~PooledConnection() {
         if (is_open()) {
             close();
@@ -48,19 +49,47 @@ private:
 
 log4cpp::Category &PooledConnection::logger_ = log4cpp::Category::getInstance("PooledConnection");
 
+
 class ConnectionPool : public std::enable_shared_from_this<ConnectionPool> {
+protected:
+    static std::shared_ptr<ConnectionPool> instance;
+    ConnectionPool() = default;
+//    ConnectionPool(std::string_view connection_string, int pool_size)
+//            : connection_string_(connection_string), pool_size_(pool_size) {
+//        logger_.debug(
+//                "Initializing ConnectionPool with connection string: " + static_cast<std::string>(connection_string) +
+//                " and pool size: " +
+//                std::to_string(pool_size));
+//    }
+
 public:
-    ConnectionPool(std::string_view connection_string, int pool_size)
-            : connection_string_(connection_string), pool_size_(pool_size) {
-        logger_.debug("Initializing ConnectionPool with connection string: " + static_cast<std::string>(connection_string) + " and pool size: " +
-                      std::to_string(pool_size));
+    void setFreeConnections(const std::queue<std::shared_ptr<PooledConnection>> &freeConnections) {
+        free_connections_ = freeConnections;
     }
 
-    void init() {
-        for (int i = 0; i < pool_size_; ++i) {
-            free_connections_.push(create_connection());
+    void setUsedConnections(const std::unordered_set<std::shared_ptr<PooledConnection>> &usedConnections) {
+        used_connections_ = usedConnections;
+    }
+
+    ConnectionPool(ConnectionPool &other) = delete;
+
+    void operator=(const ConnectionPool &) = delete;
+
+    static std::shared_ptr<ConnectionPool> getInstance() {
+        return instance;
+    }
+
+    void setConnectionString(const std::string &connectionString);
+
+    void setPoolSize(int poolSize);
+
+    void init(std::string_view connection_string, int pool_size) {
+        setConnectionString(connection_string_);
+        setPoolSize(pool_size);
+        for (int i = 0; i < instance->pool_size_; ++i) {
+            instance->free_connections_.push(instance->create_connection());
         }
-        logger_.debug("Initialized ConnectionPool with " + std::to_string(pool_size_) + " connections");
+        logger_.debug("Initialized ConnectionPool with " + std::to_string(instance->pool_size_) + " connections");
     }
 
     ~ConnectionPool() {
@@ -68,7 +97,7 @@ public:
         logger_.debug("Destroyed ConnectionPool");
     }
 
-    std::shared_ptr<PooledConnection> get_connection() {
+    std::shared_ptr<PooledConnection> getConnection() {
         std::cout << "Wait for connection\n";
         std::unique_lock<std::mutex> lock(mutex_);
         std::cout << free_connections_.size() << '\n';
@@ -128,6 +157,8 @@ private:
     std::condition_variable cv_;
     static log4cpp::Category &logger_;
 };
+std::shared_ptr<ConnectionPool> ConnectionPool::instance = std::shared_ptr<ConnectionPool>(new ConnectionPool);//TODO
 
 log4cpp::Category &ConnectionPool::logger_ = log4cpp::Category::getInstance("ConnectionPool");
+
 #endif //TASKHIVE_CONNECTIONPOOL_H

@@ -12,14 +12,14 @@ private:
     std::string login;
     std::string password;
 public:
-    [[nodiscard]] std::string_view getLogin() const;
+    [[nodiscard]] std::string getLogin() const;
 
     void setLogin(std::string_view login);
 
-    [[nodiscard]] std::string_view getPassword() const;
+    [[nodiscard]] std::string getPassword() const;
 
     void setPassword(std::string_view password);
-
+    User() = default;
 };
 
 

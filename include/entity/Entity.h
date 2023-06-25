@@ -8,11 +8,13 @@
 #include <string>
 #include <string_view>
 #include "entity/identified.h"
-class Entity: public Identified<std::string_view>{
+class Entity: public Identified<std::string>{
 private:
     std::string id;
 public:
-    [[nodiscard]] std::string_view getId() const override;
+    [[nodiscard]] std::string getId() const override{
+        return id;
+    }
 
     virtual void setId(std::string_view id_);
 
