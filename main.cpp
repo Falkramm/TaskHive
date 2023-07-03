@@ -3,19 +3,19 @@
 //
 #include <dao/connectionPool/connectionPool.h>
 #include <log4cpp/PropertyConfigurator.hh>
+#include <dao/postgres/factory.h>
+
 int main(){
-    std::shared_ptr<ConnectionPool> pool = std::make_shared<ConnectionPool>
-            ("host=localhost port=5432 dbname=postgres user=root password=root", 2);
-    pool->init();
-    std::cout << "Connected\n";
-    std::shared_ptr<PooledConnection> connection = pool->get_connection();
-    std::cout << "Connected\n";
-    pqxx::work work(*(connection->get_base_connection()));
-    pqxx::result rs = work.exec("SELECT * FROM customers");
-    std::cout << "Execed\n";
-    for(auto vec : rs) {
-        for (auto v: vec)
-            std::cout << v << ' ';
-        std::cout << '\n';
-    }
+    ConnectionPool::getInstance()->init();
+    PostgresDAOFactory factory;
+    auto taskDao = boost::any_cast<std::shared_ptr<PostgresTaskDAO>>(factory.getDao(typeid(Task).name()));
+    std::shared_ptr<Task> task = std::make_shared<Task>();
+    task->setTitle("Hellooooooooo");
+    task->setKey("1");
+    std::cout << *task << '\n';
+    auto result= taskDao->getByPrimaryKey("1");
+    result->setCompleted(true);
+    taskDao->update(result);
+    result = taskDao->getByPrimaryKey("1");
+    std::cout << *result;
 }

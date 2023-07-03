@@ -4,118 +4,184 @@
 
 #ifndef TASKHIVE_ABSTRACTPQXXDAO_H
 #define TASKHIVE_ABSTRACTPQXXDAO_H
-
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 #include <pqxx/pqxx>
+#include <utility>
 #include <vector>
 #include "genericDao.h"
 #include "entity/identified.h"
 #include "connectionPool/connectionPool.h"
 #include "persistException.h"
+#include "daoFactory.h"
 
-template<typename T, typename PK>
-requires std::is_same_v<T, Identified<PK>>
+template<typename T, typename PK> requires DerivedFromIdentified<T, PK>
 class AbstractPQXXDao : public GenericDAO<T, PK>, public std::enable_shared_from_this<AbstractPQXXDao<T, PK>> {
 public:
-    AbstractPQXXDao(std::shared_ptr<PooledConnection> connection_) : connection(std::move(connection_)) {}
+    AbstractPQXXDao(std::shared_ptr<PooledConnection> connection) : connection(std::move(connection)) {}
 
-    virtual ~AbstractPQXXDao() {}
+    /**
+     * Возвращает sql запрос для получения одной записи.
+     * <p/>
+     * SELECT * FROM [Table]
+     */
+    [[nodiscard]] virtual std::string getSelectQuery() const = 0;
 
-    virtual std::unique_ptr<T> getByPrimaryKey(PK key) override {
-        std::vector<std::unique_ptr<T>> list;
-        std::string sql = getSelectQuery() + " WHERE id = $1";
-        pqxx::prepare::invocation invoc(getPQXXConnection(), sql);
-        invoc(std::to_string(key));
-        pqxx::result result = invoc.exec();
+    /**
+     * Возвращает sql запрос для получения всех записей.
+     * <p/>
+     * SELECT * FROM [Table]
+     */
+    [[nodiscard]] virtual std::string getSelectAllQuery() const = 0;
 
-        for (const auto& row : result) {
-            list.push_back(parseRow(row));
-        }
+    /**
+     * Возвращает sql запрос для вставки новой записи в базу данных.
+     * <p/>
+     * INSERT INTO [Table] ([column, column, ...]) VALUES (?, ?, ...);
+     */
+    [[nodiscard]] virtual std::string getCreateQuery() const = 0;
 
-        if (list.empty()) {
-            return nullptr;
-        }
-        if (list.size() > 1) {
-            throw PersistException("Received more than one record.");
-        }
-        return std::move(list[0]);
-    }
+    /**
+     * Возвращает sql запрос для обновления записи.
+     * <p/>
+     * UPDATE [Table] SET [column = ?, column = ?, ...] WHERE id = ?;
+     */
+    [[nodiscard]] virtual std::string getUpdateQuery() const = 0;
 
-    virtual std::vector<std::unique_ptr<T>> getAll() override {
-        std::vector<std::unique_ptr<T>> list;
-        std::string sql = getSelectAllQuery();
-        pqxx::prepare::invocation invoc(getPQXXConnection(), sql);
-        pqxx::result result = invoc.exec();
+    /**
+     * Возвращает sql запрос для удаления записи из базы данных.
+     * <p/>
+     * DELETE FROM [Table] WHERE id= ?;
+     */
+    [[nodiscard]] virtual std::string getDeleteQuery() const = 0;
 
-        for (const auto& row : result) {
-            list.push_back(parseRow(row));
-        }
-
-        return list;
-    }
-
-    virtual std::unique_ptr<T> persist(T object) override {
-        if (!object.getId().empty()) {
-            throw PersistException("Object is already persisted.");
-        }
-
-        std::unique_ptr<T> persistInstance;
-        // Добавляем запись
-        std::string sql = getCreateQuery();
-        pqxx::prepare::invocation invoc(getPQXXConnection(), sql);
-        bindInsertParams(invoc, object);
-        pqxx::result result = invoc.exec();
-
-        if (result.affected_rows() != 1) {
-            throw PersistException("On persist modify more than 1 record: " + std::to_string(result.affected_rows()));
-        }
-
-        // Получаем только что вставленную запись
-        sql = getSelectQuery() + " WHERE id = lastval()";
-        pqxx::result result2 = getPQXXConnection().exec(sql);
-        for (const auto& row : result2) {
-            persistInstance = parseRow(row);
-        }
-
-        return persistInstance;
-    }
-
-    virtual void update(T object) override {
-        std::string sql = getUpdateQuery();
-        pqxx::prepare::invocation invoc(getPQXXConnection(), sql);
-        bindUpdateParams(invoc, object);
-        pqxx::result result = invoc.exec();
-        if (result.affected_rows() != 1) {
-            throw PersistException("On update modify more than 1 record: " + std::to_string(result.affected_rows()));
-        }
-    }
-
-    virtual void deleteObject(T object) override {
-        std::string sql = getDeleteQuery();
-        pqxx::prepare::invocation invoc(getPQXXConnection(), sql);
-        invoc(object.getId());
-        pqxx::result result = invoc.exec();
-        if (result.affected_rows() != 1) {
-            throw PersistException("On delete modify more than 1 record: " + std::to_string(result.affected_rows()));
-        }
-    }
-
+    /**
+     * Разбирает ResultSet и возвращает список объектов соответствующих содержимому ResultSet.
+     */
 protected:
+
+    virtual std::vector<std::shared_ptr<T>> parseResultSet(const pqxx::result &) const = 0;
+
+    /**
+     * Устанавливает аргументы insert запроса в соответствии со значением полей объекта object.
+     */
+
+    virtual std::shared_ptr<pqxx::result>
+    prepareStatementForInsert(pqxx::work &work, std::shared_ptr<T> object) const = 0;
+
+    /**
+     * Устанавливает аргументы update запроса в соответствии со значением полей объекта object.
+     */
+
+    virtual std::shared_ptr<pqxx::result>
+    prepareStatementForUpdate(pqxx::work &work, std::shared_ptr<T> object) const = 0;
+
+//    std::shared_ptr<DAOFactory> parentFactory;
     std::shared_ptr<PooledConnection> connection;
 
-    pqxx::connection& getPQXXConnection() {
-        return *(connection->get_base_connection());
+public:
+    std::shared_ptr<T> getByPrimaryKey(const PK &key) override {
+        try {
+            std::vector<std::shared_ptr<T>> list;
+            pqxx::work txn(*connection);
+            pqxx::result rs = txn.exec_prepared("SelectQuery", key);
+            list = parseResultSet(rs);
+            if (list.empty()) {
+                return nullptr;
+            }
+            if (list.size() > 1) {
+                throw PersistException("Received more than one record.");
+            }
+            return std::move(list.front());
+        } catch (const std::exception &e) {
+            throw PersistException(e.what());
+        }
     }
 
-    virtual std::string getSelectQuery() = 0;
-    virtual std::string getSelectAllQuery() = 0;
-    virtual std::string getCreateQuery() = 0;
-    virtual std::string getUpdateQuery() = 0;
-    virtual std::string getDeleteQuery() = 0;
+    std::vector<std::shared_ptr<T>> getAll() override {
+        try {
+            std::cout << "Start get All\n";
+            std::vector<std::shared_ptr<T>> list;
+            pqxx::work txn(*connection);
+            pqxx::result rs = txn.exec_prepared("SelectAllQuery");
+            txn.commit();
+            std::cout << "Exec\n";
+            list = parseResultSet(rs);
+            std::cout << "Parsed\n";
+            return list;
+        } catch (const std::exception &e) {
+            throw PersistException(e.what());
+        }
+    }
 
-    virtual std::unique_ptr<T> parseRow(const pqxx::row& row) = 0;
-    virtual void bindInsertParams(pqxx::prepare::invocation& invoc, const T& object) =0;
-    virtual void bindUpdateParams(pqxx::prepare::invocation& invoc, const T& object) = 0;
+    std::shared_ptr<T> persist(std::shared_ptr<T> object) override {
+        if (!object->getId().empty()) {
+            throw PersistException("Object is already persisted.");
+        }
+        try {
+            // Добавляем запись
+            const std::string sql = getCreateQuery();
+            pqxx::work txn(*connection);
+            std::cout << "Start\n";
+            std::shared_ptr<pqxx::result> rs = prepareStatementForInsert(txn, object);
+            std::cout << "Inserted\n";
+            if (rs->affected_rows() != 1) {
+                txn.abort();
+                throw PersistException("On persist modify more than 1 record: " + std::to_string(rs->affected_rows()));
+            }
+            txn.commit();
+            // Получаем только что вставленную запись
+            const std::string selectSql = getSelectQuery() + " WHERE id = lastval();";
+            pqxx::work choose(*connection);
+            pqxx::result selectRs = choose.exec(selectSql);
+            std::vector<std::shared_ptr<T>> list;
+            list = parseResultSet(selectRs);
+            if (list.empty() || list.size() != 1) {
+                throw PersistException("Exception on findByPrimaryKey new persist data.");
+            }
+            return list.front();
+        } catch (const std::exception &e) {
+            throw PersistException(e.what());
+        }
+    }
+
+    void update(std::shared_ptr<T> object) override {
+        try {
+
+            // Update the record
+            const std::string sql = getUpdateQuery();
+            pqxx::work txn(*connection);
+            std::shared_ptr<pqxx::result> rs = prepareStatementForUpdate(txn, object);
+            if (rs->affected_rows() != 1) {
+                txn.abort();
+                throw PersistException("On update modify more than 1 record: " + std::to_string(rs->affected_rows()));
+            }
+            txn.commit();
+        } catch (const std::exception &e) {
+            throw PersistException(e.what());
+        }
+    }
+
+    void remove(std::shared_ptr<T> object) override {
+        try {
+            // Check if the object is already persisted
+            if (object->getId().empty()) {
+                throw PersistException("Object is not persisted.");
+            }
+
+            // Delete the record
+            pqxx::work txn(*connection);
+            pqxx::result rs = txn.exec_prepared("DeleteQuery", object->getId());
+            if (rs.affected_rows() != 1) {
+                throw PersistException("On delete modify more than 1 record: " + std::to_string(rs.affected_rows()));
+            }
+            txn.commit();
+        } catch (const std::exception &e) {
+            throw PersistException(e.what());
+        }
+    }
+
+
 };
 
 

@@ -10,21 +10,23 @@
 
 #include <memory>
 #include <type_traits>
+#include "connectionPool/connectionPool.h"
+#include <boost/any.hpp>
 
-
-template<typename Connection>
-class DAOFactory {
+class DAOFactory{
 public:
-    /** Returns an object for managing the persistent state of an object */
-    template<class T, class PK>
-    std::unique_ptr<GenericDAO<T, PK>> getDao(std::type_info const &dtoClass) const = delete;
-
     virtual ~DAOFactory() = default;
-};
 
-template<typename Connection, typename T>
-concept DaoCreator = requires(Connection conn) {
-    { std::declval<T>().create(conn) } -> std::same_as<std::unique_ptr<GenericDAO<T, std::string_view>>>;
+
+
+    virtual boost::any getDao(const std::string &dtoClass)const = 0;//TODO need to recode
+};
+class DaoCreator {
+public:
+//        template<typename T, typename PK>
+//        requires std::is_same<T, Identified<PK>>::value
+//        std::shared_ptr<GenericDAO<T, PK>>
+    virtual boost::any create(std::shared_ptr<PooledConnection> pooledConnection) const = 0;//TODO need to recode
 };
 
 #endif //TASKHIVE_DAOFACTORY_H
