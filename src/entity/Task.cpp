@@ -1,6 +1,7 @@
 //
 // Created by daniil on 6/18/23.
 //
+#include <iomanip>
 #include "entity/Task.h"
 
 std::string Task::getKey() const {
@@ -56,3 +57,26 @@ Task::Task(std::string_view id, std::string_view key, std::string_view title, st
            const std::chrono::system_clock::time_point &deadlineDate, bool completed)
         : Entity(id), key(key), title(title), description(description), completed(completed), startDate(startDate),
           deadlineDate(deadlineDate) {}
+
+bool Task::operator==(const Task &rhs) const {
+    return static_cast<const Entity &>(*this) == static_cast<const Entity &>(rhs) &&
+           key == rhs.key &&
+           title == rhs.title &&
+           description == rhs.description &&
+           completed == rhs.completed &&
+           startDate == rhs.startDate &&
+           deadlineDate == rhs.deadlineDate;
+}
+
+bool Task::operator!=(const Task &rhs) const {
+    return !(rhs == *this);
+}
+
+std::ostream &operator<<(std::ostream &os, const Task &task) {
+    os << static_cast<const Entity &>(task) << " key: " << task.key << " title: " << task.title << " description: "
+       << task.description << " completed: " << task.completed << " startDate: " <<
+            boost::posix_time::to_simple_string(boost::posix_time::from_time_t(std::chrono::system_clock::to_time_t(task.startDate)))
+            << " deadlineDate: "
+       << boost::posix_time::to_simple_string(boost::posix_time::from_time_t(std::chrono::system_clock::to_time_t(task.deadlineDate)));
+    return os;
+}

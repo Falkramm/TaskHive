@@ -129,7 +129,21 @@ public:
 
         cv_.notify_one();
     }
-
+    void destroy() {
+        std::unique_lock<std::mutex> lock(mutex_);
+        while (!free_connections_.empty()){
+            used_connections_.insert(free_connections_.front());
+            free_connections_.pop();
+        }
+        for(auto &connection : used_connections_) {
+            try {
+                connection->close();
+            } catch(std::exception e) {
+                logger_.error("Can't close connection" + static_cast<std::string>(e.what()));
+            }
+        }
+        used_connections_.clear();
+    }
 private:
     std::shared_ptr<PooledConnection> create_connection() {
         return std::make_shared<PooledConnection>(connection_string_, shared_from_this());

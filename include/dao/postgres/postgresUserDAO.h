@@ -66,31 +66,29 @@ private:
         return result;
     }
 
-    void prepareStatementForInsert(pqxx::prepare::invocation &invocation, std::shared_ptr<User> object) const override {
-        try {
-            invocation(object->getLogin());
-            invocation(object->getPassword());
-        } catch (std::exception e) {
-            throw PersistException(e);
-        }
+    std::shared_ptr<pqxx::result>
+    prepareStatementForInsert(pqxx::work &work, std::shared_ptr<User> object) const override {
+            auto result = std::make_shared<pqxx::result>(work.exec_prepared("InsertQuery",
+                                                                            object->getLogin(),
+                                                                            object->getPassword()));
+            return result;
     }
 
-    void prepareStatementForUpdate(pqxx::prepare::invocation &invocation, std::shared_ptr<User> object) const override {
-        try {
-            invocation(object->getLogin());
-            invocation(object->getPassword());
-            invocation(object->getId());
-        } catch (std::exception e) {
-            throw PersistException(e);
-        }
+    std::shared_ptr<pqxx::result>
+    prepareStatementForUpdate(pqxx::work &work, std::shared_ptr<User> object) const override {
+            auto result = std::make_shared<pqxx::result>(work.exec_prepared("UpdateQuery",
+                                                                            object->getLogin(),
+                                                                            object->getPassword(),
+                                                                            object->getId()));
+            return result;
     }
-
+public:
     std::shared_ptr<User> getByLogin(const std::string &login) {
         try {
             std::vector<std::shared_ptr<User>> list;
-            const std::string sql = getSelectQuery() + " WHERE login = $1";
+
             pqxx::work txn(*connection);
-            pqxx::result rs = txn.exec_params(sql, login);
+            pqxx::result rs = txn.exec_prepared("ByLoginQuery", login);
             list = parseResultSet(rs);
             if (list.empty()) {
                 return nullptr;
@@ -98,6 +96,7 @@ private:
             if (list.size() > 1) {
                 throw PersistException("Received more than one record.");
             }
+            txn.commit();
             return std::move(list.front());
         } catch (const std::exception &e) {
             throw PersistException(e.what());
@@ -105,12 +104,19 @@ private:
     }
 
 public:
-    PostgresUserDAO(std::shared_ptr<PooledConnection> connection)
-            : AbstractPQXXDao<User, std::string>(std::move(connection)) {}
+    PostgresUserDAO(std::shared_ptr<PooledConnection> connection_)
+            : AbstractPQXXDao<User, std::string>(std::move(connection_)) {
+        connection->prepare("SelectQuery", selectQ + "WHERE id = $1;");
+        connection->prepare("SelectAllQuery", selectALlQ);
+        connection->prepare("InsertQuery", insertQ);
+        connection->prepare("UpdateQuery", updateQ);
+        connection->prepare("DeleteQuery", deleteQ);
+        connection->prepare("ByLoginQuery", selectQ + " WHERE login = $1");
+    }
 };
 
-std::string PostgresUserDAO::selectQ = "SELECT * FROM customers";
-std::string PostgresUserDAO::selectALlQ = "SELECT * FROM customers";
+std::string PostgresUserDAO::selectQ = "SELECT * FROM customers ";
+std::string PostgresUserDAO::selectALlQ = "SELECT * FROM customers;";
 std::string PostgresUserDAO::insertQ = "INSERT INTO customers (login, password) \nVALUES ($1, $2);";
 std::string PostgresUserDAO::updateQ = "UPDATE customers SET login=$1, password=$2 WHERE id= $3;";
 std::string PostgresUserDAO::deleteQ = "DELETE FROM customers WHERE id=$1;";

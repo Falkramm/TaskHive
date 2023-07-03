@@ -7,8 +7,8 @@
 
 #include "entity/Entity.h"
 #include <chrono>
-
-//"key", "title", "description", "completed", "start_date", "deadline_date"
+#include <ostream>
+#include <boost/date_time/posix_time/posix_time.hpp>
 class Task : public Entity {
 public:
     [[nodiscard]] std::string getKey() const;
@@ -33,10 +33,17 @@ public:
 
     [[nodiscard]] const std::chrono::system_clock::time_point &getDeadlineDate() const;
 
+    bool operator==(const Task &rhs) const;
+
+    bool operator!=(const Task &rhs) const;
+
+
     void setDeadlineDate(const std::chrono::system_clock::time_point &deadlineDate);
+
     Task() = default;
+
 private:
-    std::string key;
+    std::string key;//TODO not user id but user login
     std::string title;
     std::string description;
     bool completed;
@@ -47,6 +54,7 @@ public:
          const std::chrono::system_clock::time_point &startDate = std::chrono::system_clock::now(),
          const std::chrono::system_clock::time_point &deadlineDate = std::chrono::system_clock::now(),
          bool completed = false);//TODO make NEVER DATE
+    friend std::ostream &operator<<(std::ostream &os, const Task &task);
 };
 
 

@@ -7,6 +7,7 @@
 
 #include <string>
 #include <string_view>
+#include <ostream>
 #include "entity/identified.h"
 class Entity: public Identified<std::string>{
 private:
@@ -20,10 +21,15 @@ public:
 
     Entity() = default;
 
-    explicit Entity(std::string_view id);
+    Entity(std::string_view id);
 
     ~Entity() = default;
 
+    bool operator==(const Entity &rhs) const;
+
+    bool operator!=(const Entity &rhs) const;
+
+    friend std::ostream &operator<<(std::ostream &os, const Entity &entity);
 };
 
 
