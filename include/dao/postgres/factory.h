@@ -15,7 +15,7 @@
 class PostgresDAOFactory : public DAOFactory{
 private:
     std::shared_ptr<PooledConnection> connection;
-    std::unordered_map<std::string_view, std::shared_ptr<DaoCreator>> creators;
+    static std::unordered_map<std::string, std::shared_ptr<DaoCreator>> creators;
 
 public:
     std::shared_ptr<PooledConnection> getConnection() {
@@ -31,14 +31,15 @@ public:
         }
         return creator->create(connection);
     }
-    void close() {
+    void close()const override{
         connection->close();
     }
-
-    PostgresDAOFactory() {
-        connection = ConnectionPool::getInstance()->getConnection();
+    static void init(){//TODO need to init;
         creators[typeid(User).name()] =  std::make_shared<UserCreator>();
         creators[typeid(Task).name()] =  std::make_shared<TaskCreator>();
+    }
+    PostgresDAOFactory() {
+        connection = ConnectionPool::getInstance()->getConnection();
     }
 protected:
     class UserCreator: public DaoCreator{
