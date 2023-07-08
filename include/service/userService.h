@@ -12,31 +12,31 @@ public:
             typeid(User).name(), factory) {}
 
     std::shared_ptr<User> getById(const std::string &id) const override {
-        auto dao = boost::any_cast<std::shared_ptr<PostgresUserDAO>>(daoFactory);
+        auto dao = boost::any_cast<std::shared_ptr<PostgresUserDAO>>(genericDAO);
         return dao->getByPrimaryKey(id);
     }
 
     std::vector<std::shared_ptr<User>> getAll() const override {
-        auto dao = boost::any_cast<std::shared_ptr<PostgresUserDAO>>(daoFactory);
+        auto dao = boost::any_cast<std::shared_ptr<PostgresUserDAO>>(genericDAO);
         return dao->getAll();
     }
 
     std::shared_ptr<User> persist(const std::shared_ptr<User> object) const override {
-        auto dao = boost::any_cast<std::shared_ptr<PostgresUserDAO>>(daoFactory);
+        auto dao = boost::any_cast<std::shared_ptr<PostgresUserDAO>>(genericDAO);
         return dao->persist(object);
     }
 
     void remove(const std::shared_ptr<User> object) const override {
-        auto dao = boost::any_cast<std::shared_ptr<PostgresUserDAO>>(daoFactory);
+        auto dao = boost::any_cast<std::shared_ptr<PostgresUserDAO>>(genericDAO);
         dao->remove(object);
     }
 
     void update(const std::shared_ptr<User> object) const override {
-        auto dao = boost::any_cast<std::shared_ptr<PostgresUserDAO>>(daoFactory);
+        auto dao = boost::any_cast<std::shared_ptr<PostgresUserDAO>>(genericDAO);
         dao->update(object);
     }
     std::shared_ptr<User> getByLogin(const std::string &login){
-        auto dao = boost::any_cast<std::shared_ptr<PostgresUserDAO>>(daoFactory);
+        auto dao = boost::any_cast<std::shared_ptr<PostgresUserDAO>>(genericDAO);
         return dao->getByLogin(login);
     }
 };

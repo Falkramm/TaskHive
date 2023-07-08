@@ -55,4 +55,5 @@ protected:
         }
     };
 };
+std::unordered_map<std::string, std::shared_ptr<DaoCreator>> PostgresDAOFactory::creators;
 #endif //TASKHIVE_FACTORY_H
