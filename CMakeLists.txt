@@ -55,7 +55,7 @@ add_executable(MyTest
         include/dao/persistException.h
         include/dao/postgres/postgresUserDAO.h
         include/dao/postgres/postgresTaskDAO.h
-        include/dao/postgres/factory.h include/service/service.h)
+        include/dao/postgres/factory.h include/service/service.h include/service/userService.h include/service/serviceFactory.h include/service/taskService.h)
 target_link_libraries(MyTest PRIVATE ${GTEST_LIBRARIES})
 target_link_libraries(MyTest PRIVATE pthread)
 target_link_libraries(MyTest PRIVATE pqxx)
