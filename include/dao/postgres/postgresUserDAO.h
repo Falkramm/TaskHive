@@ -68,27 +68,28 @@ private:
 
     std::shared_ptr<pqxx::result>
     prepareStatementForInsert(pqxx::work &work, std::shared_ptr<User> object) const override {
-            auto result = std::make_shared<pqxx::result>(work.exec_prepared("InsertQuery",
-                                                                            object->getLogin(),
-                                                                            object->getPassword()));
-            return result;
+        auto result = std::make_shared<pqxx::result>(work.exec_params(getCreateQuery(),
+                                                                      object->getLogin(),
+                                                                      object->getPassword()));
+        return result;
     }
 
     std::shared_ptr<pqxx::result>
     prepareStatementForUpdate(pqxx::work &work, std::shared_ptr<User> object) const override {
-            auto result = std::make_shared<pqxx::result>(work.exec_prepared("UpdateQuery",
-                                                                            object->getLogin(),
-                                                                            object->getPassword(),
-                                                                            object->getId()));
-            return result;
+        auto result = std::make_shared<pqxx::result>(work.exec_params(getUpdateQuery(),
+                                                                      object->getLogin(),
+                                                                      object->getPassword(),
+                                                                      object->getId()));
+        return result;
     }
+
 public:
     std::shared_ptr<User> getByLogin(const std::string &login) {
         try {
             std::vector<std::shared_ptr<User>> list;
 
             pqxx::work txn(*connection);
-            pqxx::result rs = txn.exec_prepared("ByLoginQuery", login);
+            pqxx::result rs = txn.exec_params(getSelectQuery() + " WHERE login = $1;", login);
             list = parseResultSet(rs);
             if (list.empty()) {
                 return nullptr;
@@ -105,14 +106,7 @@ public:
 
 public:
     PostgresUserDAO(std::shared_ptr<PooledConnection> connection_)
-            : AbstractPQXXDao<User, std::string>(std::move(connection_)) {
-        connection->prepare("SelectQuery", selectQ + "WHERE id = $1;");
-        connection->prepare("SelectAllQuery", selectALlQ);
-        connection->prepare("InsertQuery", insertQ);
-        connection->prepare("UpdateQuery", updateQ);
-        connection->prepare("DeleteQuery", deleteQ);
-        connection->prepare("ByLoginQuery", selectQ + " WHERE login = $1");
-    }
+            : AbstractPQXXDao<User, std::string>(std::move(connection_)) {}
 };
 
 std::string PostgresUserDAO::selectQ = "SELECT * FROM customers ";

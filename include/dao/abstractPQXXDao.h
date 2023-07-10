@@ -84,7 +84,8 @@ public:
         try {
             std::vector<std::shared_ptr<T>> list;
             pqxx::work txn(*connection);
-            pqxx::result rs = txn.exec_prepared("SelectQuery", key);
+            const std::string &sql = getSelectQuery() + " WHERE id = $1;";
+            pqxx::result rs = txn.exec_params(sql, key);
             list = parseResultSet(rs);
             if (list.empty()) {
                 return nullptr;
@@ -103,7 +104,8 @@ public:
             std::cout << "Start get All\n";
             std::vector<std::shared_ptr<T>> list;
             pqxx::work txn(*connection);
-            pqxx::result rs = txn.exec_prepared("SelectAllQuery");
+            std::string sql = getSelectAllQuery();
+            pqxx::result rs = txn.exec(sql);
             txn.commit();
             std::cout << "Exec\n";
             list = parseResultSet(rs);
@@ -120,7 +122,7 @@ public:
         }
         try {
             // Добавляем запись
-            const std::string sql = getCreateQuery();
+            std::string sql = getCreateQuery();
             pqxx::work txn(*connection);
             std::cout << "Start\n";
             std::shared_ptr<pqxx::result> rs = prepareStatementForInsert(txn, object);
@@ -171,7 +173,8 @@ public:
 
             // Delete the record
             pqxx::work txn(*connection);
-            pqxx::result rs = txn.exec_prepared("DeleteQuery", object->getId());
+            std::string sql = getSelectQuery();
+            pqxx::result rs = txn.exec_params(sql, object->getId());
             if (rs.affected_rows() != 1) {
                 throw PersistException("On delete modify more than 1 record: " + std::to_string(rs.affected_rows()));
             }
