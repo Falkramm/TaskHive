@@ -13,14 +13,15 @@
 #include "connectionPool/connectionPool.h"
 #include <boost/any.hpp>
 
-class DAOFactory{
+class DAOFactory {
 public:
     virtual ~DAOFactory() = default;
 
 
-
-    virtual boost::any getDao(const std::string &dtoClass)const = 0;//TODO need to recode
+    virtual boost::any getDao(const std::string &dtoClass) const = 0;//TODO need to recode
+    virtual void close() const = 0;
 };
+
 class DaoCreator {
 public:
 //        template<typename T, typename PK>

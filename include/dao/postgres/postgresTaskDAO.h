@@ -9,6 +9,7 @@
 #include <utility>
 #include <entity/Task.h>//TODO
 #include "entity/User.h"
+
 class PostgresTaskDAO : public AbstractPQXXDao<Task, std::string> {
 private:
     static std::string selectQ;
@@ -74,7 +75,8 @@ private:
             task.setCompleted(v.at("completed").as<bool>());
             task.setDescription(v.at("description").as<std::string>());
             task.setStartDate(std::chrono::system_clock::now());
-            task.setDeadlineDate(std::chrono::system_clock::now());//TODO make normal converter from timestamp to c++ types
+            task.setDeadlineDate(
+                    std::chrono::system_clock::now());//TODO make normal converter from timestamp to c++ types
 //            task.setStartDate(
 //                    std::chrono::system_clock::time_point(
 //                            std::chrono::seconds (std::stoll(v.at("startdate").as<std::string>()))
@@ -89,35 +91,36 @@ private:
     }
 
 protected:
-    std::string timeToString(const std::chrono::system_clock::time_point &point)const {
+    std::string timeToString(const std::chrono::system_clock::time_point &point) const {
         auto time_t = std::chrono::system_clock::to_time_t(point);
         std::stringstream ss;
         ss << std::put_time(std::gmtime(&time_t), "%Y-%m-%d %H:%M:%S");
         return ss.str();
     }
+
     std::shared_ptr<pqxx::result>
     prepareStatementForInsert(pqxx::work &work, std::shared_ptr<Task> object) const override {
-            auto result = std::make_shared<pqxx::result>(work.exec_prepared("InsertQuery",
-                                                                            object->getKey(),
-                                                                            object->getTitle(),
-                                                                            object->isCompleted(),
-                                                                            object->getDescription(),
-                                                                            timeToString(object->getStartDate()),
-                                                                            timeToString(object->getStartDate())));
-            return result;
+        auto result = std::make_shared<pqxx::result>(work.exec_params(getCreateQuery(),
+                                                                      object->getKey(),
+                                                                      object->getTitle(),
+                                                                      object->isCompleted(),
+                                                                      object->getDescription(),
+                                                                      timeToString(object->getStartDate()),
+                                                                      timeToString(object->getStartDate())));
+        return result;
     }
 
     std::shared_ptr<pqxx::result>
     prepareStatementForUpdate(pqxx::work &work, std::shared_ptr<Task> object) const override {
-            auto result = std::make_shared<pqxx::result>(work.exec_prepared("UpdateQuery",
-                                                                            object->getKey(),
-                                                                            object->getTitle(),
-                                                                            object->isCompleted(),
-                                                                            object->getDescription(),
-                                                                            timeToString(object->getStartDate()),
-                                                                            timeToString(object->getDeadlineDate()),
-                                                                            object->getId()));//TODO maby we need to convert int to string
-            return result;
+        auto result = std::make_shared<pqxx::result>(work.exec_params(getUpdateQuery(),
+                                                                      object->getKey(),
+                                                                      object->getTitle(),
+                                                                      object->isCompleted(),
+                                                                      object->getDescription(),
+                                                                      timeToString(object->getStartDate()),
+                                                                      timeToString(object->getDeadlineDate()),
+                                                                      object->getId()));//TODO maby we need to convert int to string
+        return result;
     }
 
 public:
@@ -126,7 +129,7 @@ public:
             std::vector<std::shared_ptr<Task>> list;
             //TODO convert login to hash key;
             pqxx::work txn(*connection);
-            pqxx::result rs = txn.exec_prepared("ByUserQuery", user->getId());
+            pqxx::result rs = txn.exec_params(getSelectQuery() + " WHERE user_id = $1;", user->getId());
             list = parseResultSet(rs);
             txn.commit();
             return list;
@@ -137,14 +140,7 @@ public:
 
 public:
     [[maybe_unused]] PostgresTaskDAO(std::shared_ptr<PooledConnection> connection_)
-            : AbstractPQXXDao<Task, std::string>(std::move(connection_)) {
-        connection->prepare("SelectQuery", selectQ + "WHERE id = $1;");
-        connection->prepare("SelectAllQuery", selectALlQ);
-        connection->prepare("InsertQuery", insertQ);
-        connection->prepare("UpdateQuery", updateQ);
-        connection->prepare("DeleteQuery", deleteQ);
-        connection->prepare("ByUserQuery", selectQ + " WHERE user_id = $1;");
-    }
+            : AbstractPQXXDao<Task, std::string>(std::move(connection_)) {}
 };
 
 std::string PostgresTaskDAO::selectQ = "SELECT * FROM task ";
