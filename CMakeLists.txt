@@ -32,7 +32,7 @@ add_executable(TaskHive
         include/dao/persistException.h
         include/dao/postgres/postgresUserDAO.h
         include/dao/postgres/postgresTaskDAO.h
-        include/dao/postgres/factory.h)
+        include/dao/postgres/factory.h include/controller/controller.h include/controller/Filter/actionFromUriFilter.h)
 target_link_libraries(TaskHive PRIVATE pqxx)
 target_link_libraries(TaskHive PRIVATE -llog4cpp)
 target_link_libraries(TaskHive PRIVATE Boost::boost)
@@ -55,7 +55,7 @@ add_executable(MyTest
         include/dao/persistException.h
         include/dao/postgres/postgresUserDAO.h
         include/dao/postgres/postgresTaskDAO.h
-        include/dao/postgres/factory.h include/service/service.h include/service/userService.h include/service/serviceFactory.h include/service/taskService.h)
+        include/dao/postgres/factory.h include/service/service.h include/service/userService.h include/service/serviceFactory.h include/service/taskService.h include/controller/Filter/filter.h include/controller/Prepairing/prepare.h include/controller/dispatcher/dispatcher.h include/controller/controller.h include/controller/Command/command.h include/controller/Filter/encodingFilter.h include/controller/Filter/filterFactory.h include/controller/Filter/actionFromUriFilter.h include/controller/Action/actionManager.h include/controller/Action/action.h include/controller/Filter/securityFilter.h)
 target_link_libraries(MyTest PRIVATE ${GTEST_LIBRARIES})
 target_link_libraries(MyTest PRIVATE pthread)
 target_link_libraries(MyTest PRIVATE pqxx)
