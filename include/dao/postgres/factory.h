@@ -5,13 +5,13 @@
 #ifndef TASKHIVE_FACTORY_H
 #define TASKHIVE_FACTORY_H
 
-#include <dao/daoFactory.h>
-#include <dao/connectionPool/connectionPool.h>
+#include <daoFactory.h>
+#include <connectionPool.h>
 #include <unordered_map>
-#include <dao/abstractPQXXDao.h>
-#include <entity/User.h>
-#include <dao/postgres/postgresUserDAO.h>
-#include <dao/postgres/postgresTaskDAO.h>
+#include <abstractPQXXDao.h>
+#include <User.h>
+#include <postgresUserDAO.h>
+#include <postgresTaskDAO.h>
 class PostgresDAOFactory : public DAOFactory{
 private:
     std::shared_ptr<PooledConnection> connection;

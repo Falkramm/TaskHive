@@ -5,9 +5,9 @@
 #ifndef TASKHIVE_POSTGRESUSERDAO_H
 #define TASKHIVE_POSTGRESUSERDAO_H
 
-#include <dao/abstractPQXXDao.h>
+#include <abstractPQXXDao.h>
 #include <utility>
-#include <entity/User.h>
+#include <User.h>
 
 class PostgresUserDAO : public AbstractPQXXDao<User, std::string> {
 private:

@@ -6,7 +6,7 @@
 #define TASKHIVE_USER_H
 
 #include <ostream>
-#include "Entity.h"
+#include <Entity.h>
 
 class User : public Entity {
 private:

@@ -10,10 +10,10 @@
 #include <memory>
 #include <unordered_map>
 #include <utility>
-#include <dao/postgres/factory.h>
-#include "service.h"
-#include "userService.h"
-#include "taskService.h"
+#include <factory.h>
+#include <service.h>
+#include <userService.h>
+#include <taskService.h>
 class ServiceFactory {
 private:
     static log4cpp::Category &logger;

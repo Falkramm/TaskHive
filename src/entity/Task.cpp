@@ -2,7 +2,7 @@
 // Created by daniil on 6/18/23.
 //
 #include <iomanip>
-#include "entity/Task.h"
+#include <Task.h>
 
 std::string Task::getKey() const {
     return key;

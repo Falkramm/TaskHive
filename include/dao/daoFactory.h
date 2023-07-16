@@ -6,11 +6,11 @@
 #define TASKHIVE_DAOFACTORY_H
 
 #include <string_view>
-#include "genericDao.h"
+#include <genericDao.h>
 
 #include <memory>
 #include <type_traits>
-#include "connectionPool/connectionPool.h"
+#include <connectionPool.h>
 #include <boost/any.hpp>
 
 class DAOFactory {

@@ -5,7 +5,7 @@
 #ifndef TASKHIVE_TASK_H
 #define TASKHIVE_TASK_H
 
-#include "entity/Entity.h"
+#include <Entity.h>
 #include <chrono>
 #include <ostream>
 #include <boost/date_time/posix_time/posix_time.hpp>

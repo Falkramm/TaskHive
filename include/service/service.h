@@ -10,8 +10,8 @@
 #include <memory>
 #include <unordered_map>
 #include <utility>
-#include <dao/daoFactory.h>
-#include <dao/postgres/factory.h>
+#include <daoFactory.h>
+#include <factory.h>
 
 template<typename T>
 class Service {

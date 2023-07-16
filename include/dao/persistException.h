@@ -6,10 +6,8 @@
 #define TASKHIVE_PERSISTEXCEPTION_H
 
 
-
 #include <exception>
 #include <string>
-
 #include <stdexcept>
 #include <string>
 

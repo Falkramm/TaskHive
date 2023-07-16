@@ -4,7 +4,7 @@
 
 #ifndef TASKHIVE_USERSERVICE_H
 #define TASKHIVE_USERSERVICE_H
-#include "service.h"
+#include <service.h>
 
 class UserService: public Service<User>{
 public:

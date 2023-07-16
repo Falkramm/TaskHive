@@ -1,7 +1,7 @@
 //
 // Created by daniil on 6/18/23.
 //
-#include "entity/Entity.h"
+#include <Entity.h>
 
 void Entity::setId(std::string_view id_) {
     this->id = id_;

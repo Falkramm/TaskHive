@@ -9,7 +9,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <memory>
-#include <entity/identified.h>
+#include <identified.h>
 
 template<typename T, typename PK>
 concept DerivedFromIdentified = std::derived_from<T, Identified<PK>>;

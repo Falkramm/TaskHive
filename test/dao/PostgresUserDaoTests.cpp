@@ -2,7 +2,7 @@
 // Created by daniil on 6/26/23.
 //
 #include <gtest/gtest.h>
-#include <dao/postgres/factory.h>
+#include <factory.h>
 #include <dao/postgres/postgresUserDAO.h>
 // A simple test case
 std::shared_ptr<PostgresUserDAO> dao;

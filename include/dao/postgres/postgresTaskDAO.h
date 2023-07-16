@@ -5,10 +5,10 @@
 #ifndef TASKHIVE_POSTGRESTASKDAO_H
 #define TASKHIVE_POSTGRESTASKDAO_H
 
-#include <dao/abstractPQXXDao.h>
+#include <abstractPQXXDao.h>
 #include <utility>
-#include <entity/Task.h>//TODO
-#include "entity/User.h"
+#include <Task.h>//TODO
+#include <User.h>
 
 class PostgresTaskDAO : public AbstractPQXXDao<Task, std::string> {
 private:

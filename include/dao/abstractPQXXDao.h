@@ -9,11 +9,11 @@
 #include <pqxx/pqxx>
 #include <utility>
 #include <vector>
-#include "genericDao.h"
-#include "entity/identified.h"
-#include "connectionPool/connectionPool.h"
-#include "persistException.h"
-#include "daoFactory.h"
+#include <genericDao.h>
+#include <identified.h>
+#include <connectionPool.h>
+#include <persistException.h>
+#include <daoFactory.h>
 
 template<typename T, typename PK> requires DerivedFromIdentified<T, PK>
 class AbstractPQXXDao : public GenericDAO<T, PK>, public std::enable_shared_from_this<AbstractPQXXDao<T, PK>> {

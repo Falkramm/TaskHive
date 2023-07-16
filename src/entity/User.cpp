@@ -1,7 +1,7 @@
 //
 // Created by daniil on 6/18/23.
 //
-#include "entity/User.h"
+#include <User.h>
 
 std::string User::getLogin() const {
     return login;
