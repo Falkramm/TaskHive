@@ -1,10 +1,10 @@
 //
 // Created by daniil on 6/22/23.
 //
-#include <dao/connectionPool/connectionPool.h>
+#include <connectionPool.h>
 #include <log4cpp/PropertyConfigurator.hh>
-#include <dao/postgres/factory.h>
-#include <service/serviceFactory.h>
+#include <factory.h>
+#include <serviceFactory.h>
 int main(){
     ConnectionPool::getInstance()->init();
     PostgresDAOFactory::init();
