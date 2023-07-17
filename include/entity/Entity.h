@@ -8,29 +8,30 @@
 #include <string>
 #include <string_view>
 #include <ostream>
-#include <identified.h>
-class Entity: public Identified<std::string>{
-private:
-    std::string id;
-public:
-    [[nodiscard]] std::string getId() const override{
-        return id;
-    }
+#include <entity/identified.h>
+namespace Entity{
+    class Entity: public Identified<std::string>{
+    private:
+        std::string id;
+    public:
+        [[nodiscard]] std::string getId() const override{
+            return id;
+        }
 
-    virtual void setId(std::string_view id_);
+        virtual void setId(std::string_view id_);
 
-    Entity() = default;
+        Entity() = default;
 
-    Entity(std::string_view id);
+        Entity(std::string_view id);
 
-    ~Entity() = default;
+        ~Entity() = default;
 
-    bool operator==(const Entity &rhs) const;
+        bool operator==(const Entity &rhs) const;
 
-    bool operator!=(const Entity &rhs) const;
+        bool operator!=(const Entity &rhs) const;
 
-    friend std::ostream &operator<<(std::ostream &os, const Entity &entity);
-};
-
+        friend std::ostream &operator<<(std::ostream &os, const Entity &entity);
+    };
+}
 
 #endif //TASKHIVE_ENTITY_H

@@ -21,11 +21,7 @@ link_directories(/usr/lib/x86_64-linux-gnu/)
 include_directories(/usr/lib/x86_64-linux-gnu)
 
 include_directories(
-    include/dao
-    include/dao/connectionPool
-    include/dao/postgres
-    include/entity
-    include/service
+    include
 )
 
 set (SRCS
@@ -34,6 +30,17 @@ set (SRCS
     databases/sql/drop.sql
     databases/sql/generate.sql
     databases/sql/trunc.sql
+    include/controller/Action/action.h
+    include/controller/Action/actionManager.h
+    include/controller/dispatcher/dispatcher.h
+    include/controller/Filter/actionFromUriFilter.h
+    include/controller/Filter/encodingFilter.h
+    include/controller/Filter/filter.h
+    include/controller/Filter/filterFactory.h
+    include/controller/Filter/securityFilter.h
+    include/controller/Prepairing/prepare.h
+    include/controller/controller.h
+    include/dao/DAO
     include/dao/connectionPool/connectionPool.h
     include/dao/postgres/factory.h
     include/dao/postgres/postgresTaskDAO.h
@@ -59,6 +66,8 @@ set (SRCS
     main.cpp
     README.md
 )
+
+
 
 
 add_executable(${CMAKE_PROJECT_NAME} ${SRCS})

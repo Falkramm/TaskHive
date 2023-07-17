@@ -7,14 +7,15 @@
 
 
 #include <string_view>
-class Serializable {
-public:
-    static std::string_view getClass();
-};
+namespace Entity{
+    class Serializable {
+    public:
+        static std::string_view getClass();
+    };
 
-std::string_view Serializable::getClass() {
-    return {};
+    std::string_view Serializable::getClass() {
+        return {};
+    }
 }
-
 
 #endif //TASKHIVE_SERIALIZABLE_H

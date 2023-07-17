@@ -10,24 +10,25 @@
 #include <string>
 #include <stdexcept>
 #include <string>
+#include <dao/DAO.h>
+namespace DAO{
+    class PersistException : public std::exception {
+    public:
+        PersistException() : std::exception() {}
 
-class PersistException : public std::exception {
-public:
-    PersistException() : std::exception() {}
+        PersistException(std::string_view message) : std::exception(), m_message(message) {}
 
-    PersistException(std::string_view message) : std::exception(), m_message(message) {}
+        PersistException(std::string_view message, const std::exception& cause) : std::exception(cause), m_message(message) {}
 
-    PersistException(std::string_view message, const std::exception& cause) : std::exception(cause), m_message(message) {}
+        explicit PersistException(const std::exception& cause) : std::exception(cause) {}
 
-    explicit PersistException(const std::exception& cause) : std::exception(cause) {}
+        [[nodiscard]] const char* what() const noexcept override {
+            return m_message.c_str();
+        }
 
-    [[nodiscard]] const char* what() const noexcept override {
-        return m_message.c_str();
-    }
-
-private:
-    std::string m_message;
-};
-
+    private:
+        std::string m_message;
+    };
+}
 
 #endif //TASKHIVE_PERSISTEXCEPTION_H

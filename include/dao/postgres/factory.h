@@ -4,56 +4,58 @@
 
 #ifndef TASKHIVE_FACTORY_H
 #define TASKHIVE_FACTORY_H
-
-#include <daoFactory.h>
-#include <connectionPool.h>
+#include <dao/DAO.h>
+#include <dao/daoFactory.h>
+#include <dao/connectionPool/connectionPool.h>
 #include <unordered_map>
-#include <abstractPQXXDao.h>
-#include <User.h>
-#include <postgresUserDAO.h>
-#include <postgresTaskDAO.h>
-class PostgresDAOFactory : public DAOFactory{
-private:
-    std::shared_ptr<PooledConnection> connection;
-    static std::unordered_map<std::string, std::shared_ptr<DaoCreator>> creators;
+#include <dao/abstractPQXXDao.h>
+#include <entity/User.h>
+#include <dao/postgres/postgresUserDAO.h>
+#include <dao/postgres/postgresTaskDAO.h>
+namespace DAO{
+    class PostgresDAOFactory : public DAOFactory{
+    private:
+        std::shared_ptr<PooledConnection> connection;
+        static std::unordered_map<std::string, std::shared_ptr<DaoCreator>> creators;
 
-public:
-    std::shared_ptr<PooledConnection> getConnection() {
-        return connection;
-    }
+    public:
+        std::shared_ptr<PooledConnection> getConnection() {
+            return connection;
+        }
 
-    boost::any getDao(const std::string &dtoClass)const override {
-        std::shared_ptr<DaoCreator> creator = nullptr;
-        if (creators.contains(dtoClass)) {
-            creator = creators.find(dtoClass)->second;
-        } else {
-            throw PersistException("Dao object for " + dtoClass + " not found.");
+        boost::any getDao(const std::string &dtoClass)const override {
+            std::shared_ptr<DaoCreator> creator = nullptr;
+            if (creators.contains(dtoClass)) {
+                creator = creators.find(dtoClass)->second;
+            } else {
+                throw PersistException("Dao object for " + dtoClass + " not found.");
+            }
+            return creator->create(connection);
         }
-        return creator->create(connection);
-    }
-    void close()const override{
-        connection->close();
-    }
-    static void init(){//TODO need to init;
-        creators[typeid(User).name()] =  std::make_shared<UserCreator>();
-        creators[typeid(Task).name()] =  std::make_shared<TaskCreator>();
-    }
-    PostgresDAOFactory() {
-        connection = ConnectionPool::getInstance()->getConnection();
-    }
-protected:
-    class UserCreator: public DaoCreator{
-    public:
-        [[nodiscard]] boost::any create(std::shared_ptr<PooledConnection> pooledConnection)const override {
-            return std::make_shared<PostgresUserDAO>(pooledConnection);
+        void close()const override{
+            connection->close();
         }
+        static void init(){//TODO need to init;
+            creators[typeid(User).name()] =  std::make_shared<UserCreator>();
+            creators[typeid(Task).name()] =  std::make_shared<TaskCreator>();
+        }
+        PostgresDAOFactory() {
+            connection = ConnectionPool::getInstance()->getConnection();
+        }
+    protected:
+        class UserCreator: public DaoCreator{
+        public:
+            [[nodiscard]] boost::any create(std::shared_ptr<PooledConnection> pooledConnection)const override {
+                return std::make_shared<PostgresUserDAO>(pooledConnection);
+            }
+        };
+        class TaskCreator: public DaoCreator{
+        public:
+            [[nodiscard]] boost::any create(std::shared_ptr<PooledConnection> pooledConnection)const override{
+                return std::make_shared<PostgresTaskDAO>(pooledConnection);
+            }
+        };
     };
-    class TaskCreator: public DaoCreator{
-    public:
-        [[nodiscard]] boost::any create(std::shared_ptr<PooledConnection> pooledConnection)const override{
-            return std::make_shared<PostgresTaskDAO>(pooledConnection);
-        }
-    };
-};
-std::unordered_map<std::string, std::shared_ptr<DaoCreator>> PostgresDAOFactory::creators;
+    std::unordered_map<std::string, std::shared_ptr<DaoCreator>> PostgresDAOFactory::creators;
+}
 #endif //TASKHIVE_FACTORY_H
