@@ -3,7 +3,8 @@
 
 cmake_minimum_required(VERSION 3.5)
 project(TaskHive)
-
+#           AddQt
+list(APPEND CMAKE_PREFIX_PATH "/home/daniil/Qt/6.5.1/gcc_64")
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -40,7 +41,7 @@ set (SRCS
     include/controller/Filter/securityFilter.h
     include/controller/Prepairing/prepare.h
     include/controller/controller.h
-    include/dao/DAO
+    include/dao/DAO.h
     include/dao/connectionPool/connectionPool.h
     include/dao/postgres/factory.h
     include/dao/postgres/postgresTaskDAO.h
@@ -72,8 +73,7 @@ set (SRCS
     src/view/screen/loginscreen.cpp
     CMakeLists.txt
     main.cpp
-    README.md
-)
+    README.md)
 
 
 
