@@ -5,7 +5,7 @@
 #include <log4cpp/PropertyConfigurator.hh>
 #include <dao/postgres/factory.h>
 #include <service/serviceFactory.h>
-#include <view/screen/taskscreen.h>
+#include <view/screen/tasklistscreen.h>
 using namespace DAO;
 using namespace Service;
 //int main(){
@@ -33,12 +33,12 @@ int main(int argc, char *argv[])
     std::shared_ptr<ServiceFactory> factory = std::make_shared<ServiceFactory>();
     std::cout << "Inited\n";
     auto tservice = boost::any_cast<std::shared_ptr<TaskService>>(factory->getService(typeid(Task).name()));
-    auto list = tservice->getById("26");
-//    for(auto user : list)
-//        std::cout << *user << '\n';
-    std::cout << *list << "Error\n";
+    auto list = tservice->getAll();
+    for(auto user : list)
+        std::cout << *user << '\n';
+//    std::cout << *list << "Error\n";
     QApplication a(argc, argv);
-    std::shared_ptr<TaskScreen> screen = std::make_shared<TaskScreen>(list);
+    std::shared_ptr<TaskListScreen> screen = std::make_shared<TaskListScreen>(list);
     screen->show();
     return a.exec();
 }

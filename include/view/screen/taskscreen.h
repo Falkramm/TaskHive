@@ -32,6 +32,7 @@ public:
         hLayout->addWidget(unwrapButton);
         QVBoxLayout *vLayout = new QVBoxLayout();
         QTextEdit *descriptionEdit = new QTextEdit(tr(task->getDescription().c_str()));
+        descriptionEdit->setVisible(false);
         vLayout->addLayout(hLayout);
         vLayout->addWidget(descriptionEdit);
         setLayout(vLayout);
@@ -44,7 +45,6 @@ public:
                     descriptionEdit->setVisible(true);
             }
         });
-        //connect(sendButton, &QPushButton::clicked, this, &LogInScreen::PressSendButton);
     }
     virtual ~TaskScreen(){
         delete taskDescriptionWidget;

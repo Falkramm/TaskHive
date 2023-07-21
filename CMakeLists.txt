@@ -62,6 +62,7 @@ set (SRCS
     include/view/mainscreen.h
     include/view/screen/screen.h
     include/view/screen/taskscreen.h
+    include/view/screen/tasklistscreen.h
     include/view/screen/loginscreen.h
     include/view/screen/RegistrationScreen.h
     src/entity/Entity.cpp
