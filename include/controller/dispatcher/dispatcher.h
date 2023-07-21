@@ -6,50 +6,84 @@
 #define TASKHIVE_DISPATCHER_H
 
 #include <controller/controller.h>
-#include <controller/Filter/filter.h>
-#include <controller/Action/actionManager.h>
+#include <memory>
 
 namespace controller {
     class Dispatcher {
-    public:
-        std::shared_ptr<ServiceFactory> getFactory() {
-            return std::make_shared<ServiceFactory>();
+    private:
+        static std::shared_ptr<Entity::User> authorizedUser;
+        static std::shared_ptr<Service::ServiceFactory> getFactory(){
+            return std::make_shared<Service::ServiceFactory>();
         }
 
-        virtual void process(std::shared_ptr<Request> request,
-                             std::shared_ptr<Response> response) {
-            std::shared_ptr<Action> action = request->getAction();
-            std::shared_ptr<ActionManager> actionManager = nullptr;
-            try {
-//                HttpSession session = request.getSession();
-//                if (session != null) {
-//                    @SuppressWarnings("unchecked")
-//                    Map<String, Object> attributes = (Map<String, Object>) session.getAttribute("redirectedData");
-//                    if (attributes != null) {
-//                        for (String key : attributes.keySet()) {
-//                            request.setAttribute(key, attributes.get(key));
-//                        }
-//                        session.removeAttribute("redirectedData");
-//                    }
-//                }
-                actionManager = ActionManagerFactory::getManager(getFactory());
-                actionManager->execute(action, request, response);
-
-            } catch (PersistException e) {
-//                logger.error("It is impossible to process request", e);
-                request->set("error", "Ошибка обработки данных");
-                response.reset();
-                //SenderManager.sendObject(response, e);TODO
+        static const std::shared_ptr<Entity::User> getAuthorizedUser(){
+            return authorizedUser;
+        }
+        static void setAuthorizedUser(std::shared_ptr<Entity::User> user){
+            authorizedUser = user;
+        }
+    public:
+        static void signIn(std::shared_ptr<Entity::User> &user){
+            if(getAuthorizedUser() != nullptr)
+                throw std::runtime_error("The user is already logged in");
+            auto factory = getFactory();
+            auto userService = boost::any_cast<std::shared_ptr<Service::UserService>>(factory->getService(typeid(Entity::User).name()));
+            std::string password = user->getPassword();
+            try{
+                user = userService->getByLogin(user->getLogin());
+            } catch(...){
+                throw std::runtime_error("The login or password is not recognized");
             }
-            if (actionManager != nullptr) {
-                try {
-                    actionManager->close();
-                } catch (pqxx::sql_error e) {
-                    throw std::runtime_error(e);
-                }
-            }
+            if(user->getPassword() != password)
+                throw std::runtime_error("The login or password is not recognized");
+            setAuthorizedUser(user);
+        }
+        static void signUp(std::shared_ptr<Entity::User> &user){
+            if(getAuthorizedUser() != nullptr)
+                throw std::runtime_error("The user is already logged in");
+            auto factory = getFactory();
+            auto userService = boost::any_cast<std::shared_ptr<Service::UserService>>(factory->getService(typeid(Entity::User).name()));
+            std::string password = user->getPassword();
+            if(userService->getByLogin(user->getLogin()) != nullptr)
+                throw new std::runtime_error("This login is already occupied");
+            user = userService->persist(user);
+        }
+        static void signOut(){
+            if(getAuthorizedUser() != nullptr)
+                throw new std::runtime_error("The user has already logged out");
+            setAuthorizedUser(nullptr);
+        }
+        static std::vector<std::shared_ptr<Entity::Task> > getTaskList(){
+            if(getAuthorizedUser() == nullptr)
+                throw new std::runtime_error("The user is not logged in");
+            auto factory = getFactory();
+            auto taskService = boost::any_cast<std::shared_ptr<Service::TaskService>>(factory->getService(typeid(Entity::Task).name()));
+            return taskService->getByUser(getAuthorizedUser());
+        }
+        static void updateTask(std::shared_ptr<Entity::Task> task){
+            if(getAuthorizedUser() == nullptr)
+                throw new std::runtime_error("The user is not logged in");
+            auto factory = getFactory();
+            auto taskService = boost::any_cast<std::shared_ptr<Service::TaskService>>(factory->getService(typeid(Entity::Task).name()));
+            taskService->update(task);
+        }
+        static void removeTask(std::shared_ptr<Entity::Task> task){
+            if(getAuthorizedUser() == nullptr)
+                throw new std::runtime_error("The user is not logged in");
+            auto factory = getFactory();
+            auto taskService = boost::any_cast<std::shared_ptr<Service::TaskService>>(factory->getService(typeid(Entity::Task).name()));
+            taskService->remove(task);
+        }
+        static std::shared_ptr<Entity::Task> persistTask(std::shared_ptr<Entity::Task> task){
+            if(getAuthorizedUser() == nullptr)
+                throw new std::runtime_error("The user is not logged in");
+            task->setKey(getAuthorizedUser()->getId());
+            auto factory = getFactory();
+            auto taskService = boost::any_cast<std::shared_ptr<Service::TaskService>>(factory->getService(typeid(Entity::Task).name()));
+            return taskService->persist(task);//TODO need to check for correct persist in DAO
         }
     };
+    std::shared_ptr<Entity::User> Dispatcher::authorizedUser = nullptr;
 }
 
 

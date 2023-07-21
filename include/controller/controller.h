@@ -4,10 +4,8 @@
 
 #ifndef TASKHIVE_CONTROLLER_H
 #define TASKHIVE_CONTROLLER_H
-#include <boost/beast/http.hpp>
-#include <boost/property_tree/json_parser.hpp>
+#include <service/serviceFactory.h>
 namespace controller{
-    namespace http = boost::beast::http;
-    namespace json = boost::property_tree;
+
 }
 #endif //TASKHIVE_CONTROLLER_H

@@ -31,15 +31,7 @@ set (SRCS
     databases/sql/drop.sql
     databases/sql/generate.sql
     databases/sql/trunc.sql
-    include/controller/Action/action.h
-    include/controller/Action/actionManager.h
     include/controller/dispatcher/dispatcher.h
-    include/controller/Filter/actionFromUriFilter.h
-    include/controller/Filter/encodingFilter.h
-    include/controller/Filter/filter.h
-    include/controller/Filter/filterFactory.h
-    include/controller/Filter/securityFilter.h
-    include/controller/Prepairing/prepare.h
     include/controller/controller.h
     include/dao/DAO.h
     include/dao/connectionPool/connectionPool.h
