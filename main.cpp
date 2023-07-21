@@ -5,21 +5,40 @@
 #include <log4cpp/PropertyConfigurator.hh>
 #include <dao/postgres/factory.h>
 #include <service/serviceFactory.h>
-using namespace Entity;
+#include <view/screen/taskscreen.h>
 using namespace DAO;
 using namespace Service;
-int main(){
-    ConnectionPool::getInstance()->init();
+//int main(){
+//    ConnectionPool::getInstance()->init();
+//    PostgresDAOFactory::init();
+//    ServiceFactory::init();
+
+//    std::shared_ptr<ServiceFactory> factory = std::make_shared<ServiceFactory>();
+//    std::cout << "Inited\n";
+//    auto tservice = boost::any_cast<std::shared_ptr<TaskService>>(factory->getService(typeid(Task).name()));
+//    auto uservice = boost::any_cast<std::shared_ptr<UserService>>(factory->getService(typeid(User).name()));
+//    auto user = uservice->getById("10");
+//    std::cout << *user;
+//    auto list = tservice->getByUser(user);
+//    for(auto user : list)
+//        std::cout << *user << '\n';
+//}
+
+
+int main(int argc, char *argv[])
+{    ConnectionPool::getInstance()->init();
     PostgresDAOFactory::init();
     ServiceFactory::init();
 
     std::shared_ptr<ServiceFactory> factory = std::make_shared<ServiceFactory>();
     std::cout << "Inited\n";
     auto tservice = boost::any_cast<std::shared_ptr<TaskService>>(factory->getService(typeid(Task).name()));
-    auto uservice = boost::any_cast<std::shared_ptr<UserService>>(factory->getService(typeid(User).name()));
-    auto user = uservice->getById("10");
-    std::cout << *user;
-    auto list = tservice->getByUser(user);
-    for(auto user : list)
-        std::cout << *user << '\n';
+    auto list = tservice->getById("26");
+//    for(auto user : list)
+//        std::cout << *user << '\n';
+    std::cout << *list << "Error\n";
+    QApplication a(argc, argv);
+    std::shared_ptr<TaskScreen> screen = std::make_shared<TaskScreen>(list);
+    screen->show();
+    return a.exec();
 }

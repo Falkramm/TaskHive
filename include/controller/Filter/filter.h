@@ -6,11 +6,9 @@
 #define TASKHIVE_FILTER_H
 
 #include <controller/controller.h>
-#include <controller/Command/command.h>
 #include <queue>
-#include <controller/Filter/filterFactory.h>
-#include <controller/dispatcher/dispatcher.h>
 namespace controller {
+    class Dispatcher;
     class FilterChain;
 
     class Filter {
@@ -23,7 +21,13 @@ namespace controller {
         virtual ~Filter() {}
     };
 
+    class FilterFactory {
 
+    public:
+        static std::shared_ptr<Filter> getFilter(std::string_view) {
+            return nullptr;//TODO
+        }
+    };
     class FilterChain : public std::enable_shared_from_this<FilterChain> {
     private:
         std::queue<std::string_view> chain;

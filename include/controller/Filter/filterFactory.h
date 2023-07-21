@@ -6,13 +6,7 @@
 #define TASKHIVE_FILTERFACTORY_H
 #include <controller/Filter/filter.h>
 namespace controller{
-    class FilterFactory {
 
-    public:
-        static std::shared_ptr<Filter> getFilter(std::string_view) {
-            return nullptr;//TODO
-        }
-    };
 }
 
 

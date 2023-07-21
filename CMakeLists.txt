@@ -58,10 +58,17 @@ set (SRCS
     include/service/serviceFactory.h
     include/service/taskService.h
     include/service/userService.h
+    include/view/view.h
+    include/view/mainscreen.h
+    include/view/screen/screen.h
+    include/view/screen/taskscreen.h
+    include/view/screen/loginscreen.h
+    include/view/screen/RegistrationScreen.h
     src/entity/Entity.cpp
     src/entity/Task.cpp
     src/entity/User.cpp
-    test/dao/PostgresUserDaoTests.cpp
+    src/view/mainscreen.cpp
+    src/view/screen/loginscreen.cpp
     CMakeLists.txt
     main.cpp
     README.md

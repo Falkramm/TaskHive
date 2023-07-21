@@ -91,12 +91,7 @@ namespace DAO{
         }
 
     protected:
-        std::string timeToString(const std::chrono::system_clock::time_point &point) const {
-            auto time_t = std::chrono::system_clock::to_time_t(point);
-            std::stringstream ss;
-            ss << std::put_time(std::gmtime(&time_t), "%Y-%m-%d %H:%M:%S");
-            return ss.str();
-        }
+
 
         std::shared_ptr<pqxx::result>
         prepareStatementForInsert(pqxx::work &work, std::shared_ptr<Task> object) const override {
@@ -105,8 +100,8 @@ namespace DAO{
                                                                           object->getTitle(),
                                                                           object->isCompleted(),
                                                                           object->getDescription(),
-                                                                          timeToString(object->getStartDate()),
-                                                                          timeToString(object->getDeadlineDate())));
+                                                                          Task::timeToString(object->getStartDate()),
+                                                                          Task::timeToString(object->getDeadlineDate())));
             return result;
         }
 
@@ -117,8 +112,8 @@ namespace DAO{
                                                                           object->getTitle(),
                                                                           object->isCompleted(),
                                                                           object->getDescription(),
-                                                                          timeToString(object->getStartDate()),
-                                                                          timeToString(object->getDeadlineDate()),
+                                                                          Task::timeToString(object->getStartDate()),
+                                                                          Task::timeToString(object->getDeadlineDate()),
                                                                           object->getId()));//TODO maby we need to convert int to string
             return result;
         }
