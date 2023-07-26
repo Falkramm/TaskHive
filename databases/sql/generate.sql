@@ -1,5 +1,6 @@
 -- Insert sample data into the customers table
 INSERT INTO customers (login, password) VALUES
+                                            ('user1', '1'),
                                             ('alice', 'password1'),
                                             ('bob', 'password2'),
                                             ('charlie', 'password3'),

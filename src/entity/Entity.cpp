@@ -25,7 +25,7 @@ namespace Entity{
     }
 
     std::string Entity::getId() const {
-        return std::string();
+        return id;
     }
 
 }

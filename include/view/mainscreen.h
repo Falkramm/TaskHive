@@ -5,7 +5,7 @@
 #include <controller/dispatcher/dispatcher.h>
 #include <view/view.h>
 #include <view/screen/loginscreen.h>
-
+#include <view/screen/tasklistscreen.h>
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainScreen; }
 QT_END_NAMESPACE

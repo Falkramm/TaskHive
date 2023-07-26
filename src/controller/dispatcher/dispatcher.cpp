@@ -16,8 +16,11 @@ namespace controller {
     }
 
     void Dispatcher::signIn(std::shared_ptr<Entity::User> &user) {
-        if (getAuthorizedUser() != nullptr)
+        std::cout << "Now user: " << getAuthorizedUser() << '\n';
+        if (getAuthorizedUser() != nullptr) {
+            std::cout << "The user is already logged in\n" ;
             throw std::runtime_error("The user is already logged in");
+        }
         auto factory = getFactory();
         auto userService = boost::any_cast<std::shared_ptr<Service::UserService>>(
                 factory->getService(typeid(Entity::User).name()));
@@ -25,10 +28,13 @@ namespace controller {
         try {
             user = userService->getByLogin(user->getLogin());
         } catch (...) {
+            std::cout << "The login or password is not recognized\n";
             throw std::runtime_error("The login or password is not recognized");
         }
-        if (user->getPassword() != password)
+        if (user->getPassword() != password) {
+            std::cout << "The login or password is not recognized\n";
             throw std::runtime_error("The login or password is not recognized");
+        }
         setAuthorizedUser(user);
     }
 
@@ -84,5 +90,10 @@ namespace controller {
                 factory->getService(typeid(Entity::Task).name()));
         return taskService->persist(task);//TODO need to check for correct persist in DAO
     }
-    std::shared_ptr<Entity::User> Dispatcher::authorizedUser = nullptr;
+
+    Dispatcher::Dispatcher(): authorizedUser(nullptr){}
+
+    bool Dispatcher::isAuthorized() {
+        return getAuthorizedUser() != nullptr;
+    }
 }

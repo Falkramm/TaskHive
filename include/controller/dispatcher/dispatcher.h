@@ -11,28 +11,32 @@
 namespace controller {
     class Dispatcher {
     private:
-        static std::shared_ptr<Entity::User> authorizedUser;
+        std::shared_ptr<Entity::User> authorizedUser;
+    public:
+        Dispatcher();
 
-        static std::shared_ptr<Service::ServiceFactory> getFactory();
+    private:
+        std::shared_ptr<Service::ServiceFactory> getFactory();
 
-        static std::shared_ptr<Entity::User> getAuthorizedUser();
+        std::shared_ptr<Entity::User> getAuthorizedUser();
 
-        static void setAuthorizedUser(std::shared_ptr<Entity::User> user);
+        void setAuthorizedUser(std::shared_ptr<Entity::User> user);
 
     public:
-        static void signIn(std::shared_ptr<Entity::User> &user);
+        bool isAuthorized();
+        void signIn(std::shared_ptr<Entity::User> &user);
 
-        static void signUp(std::shared_ptr<Entity::User> &user);
+        void signUp(std::shared_ptr<Entity::User> &user);
 
-        static void signOut();
+        void signOut();
 
-        static std::vector<std::shared_ptr<Entity::Task> > getTaskList();
+        std::vector<std::shared_ptr<Entity::Task> > getTaskList();
 
-        static void updateTask(std::shared_ptr<Entity::Task> task);
+        void updateTask(std::shared_ptr<Entity::Task> task);
 
-        static void removeTask(std::shared_ptr<Entity::Task> task);
+        void removeTask(std::shared_ptr<Entity::Task> task);
 
-        static std::shared_ptr<Entity::Task> persistTask(std::shared_ptr<Entity::Task> task);
+        std::shared_ptr<Entity::Task> persistTask(std::shared_ptr<Entity::Task> task);
     };
 }
 

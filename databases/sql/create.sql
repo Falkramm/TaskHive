@@ -8,7 +8,7 @@ CREATE TABLE customers (
 -- Create the task table with a foreign key constraint on user_id
 CREATE TABLE task (
                       id SERIAL PRIMARY KEY,
-                      user_id INT NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
+                      user_id SERIA NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
                       title TEXT NOT NULL,
                       description TEXT,
                       completed BOOLEAN NOT NULL DEFAULT FALSE,
