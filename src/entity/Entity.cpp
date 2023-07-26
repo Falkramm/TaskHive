@@ -3,7 +3,7 @@
 //
 #include <entity/Entity.h>
 namespace Entity{
-    void Entity::setId(std::string_view id_) {
+    void Entity::setId(std::string_view id_){
         this->id = id_;
     }
 
@@ -23,4 +23,9 @@ namespace Entity{
         os << " id: " << entity.id;
         return os;
     }
+
+    std::string Entity::getId() const {
+        return std::string();
+    }
+
 }

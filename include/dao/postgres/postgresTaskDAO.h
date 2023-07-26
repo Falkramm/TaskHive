@@ -20,35 +20,20 @@ namespace DAO{
 
         class PersistTask : public Task {
         public:
-            void setId(std::string_view id) override {
-                Task::setId(id);
-            }
+            void setId(std::string_view id) override;
         };
 
-        std::string getSelectQuery() const override {
-            return selectQ;
-        }
+        std::string getSelectQuery() const override;
 
-        std::string getSelectAllQuery() const override {
-            return selectALlQ;
-        }
+        std::string getSelectAllQuery() const override;
 
-        std::string getCreateQuery() const override {
-            return insertQ;
-        }
+        std::string getCreateQuery() const override;
 
-        std::string getUpdateQuery() const override {
-            return updateQ;
-        }
+        std::string getUpdateQuery() const override;
 
-        std::string getDeleteQuery() const override {
-            return deleteQ;
-        }
+        std::string getDeleteQuery() const override;
 
-        std::shared_ptr<Task> create() override {
-            std::shared_ptr<Task> user;
-            return AbstractPQXXDao<Task, std::string>::persist(std::move(user));
-        }
+        std::shared_ptr<Task> create() override;
 
     //    boost::posix_time::ptime pTimeFromString(std::string str)const {
     //        boost::posix_time::ptime datetime = boost::posix_time::time_from_string(str);
@@ -65,83 +50,28 @@ namespace DAO{
     //
     //        return datetime;
     //    }
-        std::vector<std::shared_ptr<Task>> parseResultSet(const pqxx::result &rs) const override {
-            std::vector<std::shared_ptr<Task>> result;
-            for (pqxx::row v: rs) {
-                PostgresTaskDAO::PersistTask task;
-                task.setId(v.at("id").as<std::string>());
-                task.setKey(v.at("user_id").as<std::string>());
-                task.setTitle(v.at("title").as<std::string>());
-                task.setCompleted(v.at("completed").as<bool>());
-                task.setDescription(v.at("description").as<std::string>());
-                task.setStartDate(std::chrono::system_clock::now());
-                task.setDeadlineDate(
-                        std::chrono::system_clock::now());//TODO make normal converter from timestamp to c++ types
-    //            task.setStartDate(
-    //                    std::chrono::system_clock::time_point(
-    //                            std::chrono::seconds (std::stoll(v.at("startdate").as<std::string>()))
-    //                    )
-    //            );
-    //            task.setDeadlineDate(std::chrono::system_clock::time_point(
-    //                    std::chrono::seconds(std::stoll(v.at("deadlinedate").as<std::string>()))
-    //            ));
-                result.emplace_back(std::make_shared<Task>(task));
-            }
-            return result;
-        }
+        std::vector<std::shared_ptr<Task>> parseResultSet(const pqxx::result &rs) const override;
 
     protected:
 
 
         std::shared_ptr<pqxx::result>
-        prepareStatementForInsert(pqxx::work &work, std::shared_ptr<Task> object) const override {
-            auto result = std::make_shared<pqxx::result>(work.exec_params(getCreateQuery(),
-                                                                          object->getKey(),
-                                                                          object->getTitle(),
-                                                                          object->isCompleted(),
-                                                                          object->getDescription(),
-                                                                          Task::timeToString(object->getStartDate()),
-                                                                          Task::timeToString(object->getDeadlineDate())));
-            return result;
-        }
+        prepareStatementForInsert(pqxx::work &work, std::shared_ptr<Task> object) const override;
 
         std::shared_ptr<pqxx::result>
-        prepareStatementForUpdate(pqxx::work &work, std::shared_ptr<Task> object) const override {
-            auto result = std::make_shared<pqxx::result>(work.exec_params(getUpdateQuery(),
-                                                                          object->getKey(),
-                                                                          object->getTitle(),
-                                                                          object->isCompleted(),
-                                                                          object->getDescription(),
-                                                                          Task::timeToString(object->getStartDate()),
-                                                                          Task::timeToString(object->getDeadlineDate()),
-                                                                          object->getId()));//TODO maby we need to convert int to string
-            return result;
-        }
+        prepareStatementForUpdate(pqxx::work &work, std::shared_ptr<Task> object) const override;
 
     public:
-        std::vector<std::shared_ptr<Task>> getByUser(const std::shared_ptr<User> user) {
-            try {
-                std::vector<std::shared_ptr<Task>> list;
-                //TODO convert login to hash key;
-                pqxx::work txn(*connection);
-                pqxx::result rs = txn.exec_params(getSelectQuery() + " WHERE user_id = $1;", user->getId());
-                list = parseResultSet(rs);
-                txn.commit();
-                return list;
-            } catch (const std::exception &e) {
-                throw PersistException(e.what());
-            }
-        }
+        std::vector<std::shared_ptr<Task>> getByUser(std::shared_ptr<User> user);
 
     public:
-        [[maybe_unused]] PostgresTaskDAO(std::shared_ptr<PooledConnection> connection_)
-                : AbstractPQXXDao<Task, std::string>(std::move(connection_)) {}
+        [[maybe_unused]] explicit PostgresTaskDAO(std::shared_ptr<PooledConnection> connection_);
+
+    public:
+        class TaskCreator: public DaoCreator{
+        public:
+            [[nodiscard]] boost::any create(std::shared_ptr<PooledConnection> pooledConnection)const override;
+        };
     };
-
-    std::string PostgresTaskDAO::selectQ = "SELECT * FROM task ";
-    std::string PostgresTaskDAO::selectALlQ = "SELECT * FROM task;";
-    std::string PostgresTaskDAO::insertQ = "INSERT INTO task (user_id, title, completed, description, startDate, deadlineDate) \nVALUES ($1, $2, $3, $4, $5, $6);";
-    std::string PostgresTaskDAO::updateQ = "UPDATE task SET user_id = $1, title = $2, completed = $3, description = $4, startDate = $5, deadlineDate = $6 WHERE id= $7;";
-    std::string PostgresTaskDAO::deleteQ = "DELETE FROM task WHERE id= $1;";
 }
 #endif //TASKHIVE_POSTGRESTASKDAO_H

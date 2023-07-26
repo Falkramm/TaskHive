@@ -4,46 +4,30 @@
 
 #ifndef TASKHIVE_TASKSERVICE_H
 #define TASKHIVE_TASKSERVICE_H
+
 #include <service/service.h>
-namespace Service{
-    class TaskService: public Service<Task>{
+
+namespace Service {
+    class TaskService : public Service<Task> {
     public:
-        TaskService(const std::shared_ptr<PostgresDAOFactory> &factory) : Service(typeid(Task).name(), factory) {}
+        explicit TaskService(const std::shared_ptr<PostgresDAOFactory> &factory);
 
-        std::shared_ptr<Task> getById(const std::string &id) const override {
-            auto dao = boost::any_cast<std::shared_ptr<PostgresTaskDAO>>(genericDAO);
-            return dao->getByPrimaryKey(id);
-        }
+        [[nodiscard]] std::shared_ptr<Task> getById(const std::string &id) const override;
 
-        std::vector<std::shared_ptr<Task>> getAll() const override {
-            auto dao = boost::any_cast<std::shared_ptr<PostgresTaskDAO>>(genericDAO);
-            return dao->getAll();
-        }
+        [[nodiscard]] std::vector<std::shared_ptr<Task>> getAll() const override;
 
-        std::shared_ptr<Task> persist(const std::shared_ptr<Task> object) const override {
-            auto dao = boost::any_cast<std::shared_ptr<PostgresTaskDAO>>(genericDAO);
-            return dao->persist(object);
-        }
+        [[nodiscard]] std::shared_ptr<Task> persist(std::shared_ptr<Task> object) const override;
 
-        void remove(const std::shared_ptr<Task> object) const override {
-            auto dao = boost::any_cast<std::shared_ptr<PostgresTaskDAO>>(genericDAO);
-            dao->remove(object);
-        }
+        void remove(std::shared_ptr<Task> object) const override;
 
-        void update(const std::shared_ptr<Task> object) const override {
-            auto dao = boost::any_cast<std::shared_ptr<PostgresTaskDAO>>(genericDAO);
-            dao->update(object);
-        }
-        std::vector<std::shared_ptr<Task>> getByUser(const std::shared_ptr<User> user){
-            auto dao = boost::any_cast<std::shared_ptr<PostgresTaskDAO>>(genericDAO);
-            return dao->getByUser(user);
-        }
+        void update(std::shared_ptr<Task> object) const override;
+
+        std::vector<std::shared_ptr<Task>> getByUser(std::shared_ptr<User> user);
     };
-    class TaskServiceCreator: public ServiceCreator{
+
+    class TaskServiceCreator : public ServiceCreator {
     public:
-        boost::any create(std::shared_ptr<PostgresDAOFactory> daoFactory) const override {
-            return std::make_shared<TaskService>(daoFactory);
-        }
+        [[nodiscard]] boost::any create(std::shared_ptr<PostgresDAOFactory> daoFactory) const override;
     };
 }
 #endif //TASKHIVE_TASKSERVICE_H

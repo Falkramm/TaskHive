@@ -19,100 +19,42 @@ namespace DAO{
 
         class PersistTask : public User {
         public:
-            void setId(std::string_view id) override {
-                User::setId(id);
-            }
+            void setId(std::string_view id) override;
         };
 
-        std::string getSelectQuery() const override {
-            return selectQ;
-        }
+        std::string getSelectQuery() const override;
 
-        std::string getSelectAllQuery() const override {
-            return selectALlQ;
-        }
+        std::string getSelectAllQuery() const override;
 
-        std::string getCreateQuery() const override {
-            return insertQ;
-        }
+        std::string getCreateQuery() const override;
 
-        std::string getUpdateQuery() const override {
-            return updateQ;
-        }
+        std::string getUpdateQuery() const override;
 
-        std::string getDeleteQuery() const override {
-            return deleteQ;
-        }
+        std::string getDeleteQuery() const override;
 
-        std::shared_ptr<User> create() override {
-            std::shared_ptr<User> user;
-            return AbstractPQXXDao<User, std::string>::persist(std::move(user));
-        }
+        std::shared_ptr<User> create() override;
 
-        std::vector<std::shared_ptr<User>> parseResultSet(const pqxx::result &rs) const override {
-            std::vector<std::shared_ptr<User>> result;
-            try {
-                std::cout << "Result size: " << rs.size() << '\n';
-                for (pqxx::row v: rs) {
-                    PostgresUserDAO::PersistTask user;
-                    user.setId(v.at("id").as<std::string>());
-                    user.setLogin(v.at("login").as<std::string>());
-                    user.setPassword(v.at("password").as<std::string>());
-                    result.emplace_back(std::make_shared<User>(user));
-                }
-            } catch (std::exception e) {
-                throw PersistException(e);
-            }
-            return result;
-        }
+        std::vector<std::shared_ptr<User>> parseResultSet(const pqxx::result &rs) const override;
 
         std::shared_ptr<pqxx::result>
-        prepareStatementForInsert(pqxx::work &work, std::shared_ptr<User> object) const override {
-            auto result = std::make_shared<pqxx::result>(work.exec_params(getCreateQuery(),
-                                                                          object->getLogin(),
-                                                                          object->getPassword()));
-            return result;
-        }
+        prepareStatementForInsert(pqxx::work &work, std::shared_ptr<User> object) const override;
 
         std::shared_ptr<pqxx::result>
-        prepareStatementForUpdate(pqxx::work &work, std::shared_ptr<User> object) const override {
-            auto result = std::make_shared<pqxx::result>(work.exec_params(getUpdateQuery(),
-                                                                          object->getLogin(),
-                                                                          object->getPassword(),
-                                                                          object->getId()));
-            return result;
-        }
+        prepareStatementForUpdate(pqxx::work &work, std::shared_ptr<User> object) const override;
 
     public:
-        std::shared_ptr<User> getByLogin(const std::string &login) {
-            try {
-                std::vector<std::shared_ptr<User>> list;
-
-                pqxx::work txn(*connection);
-                pqxx::result rs = txn.exec_params(getSelectQuery() + " WHERE login = $1;", login);
-                list = parseResultSet(rs);
-                if (list.empty()) {
-                    return nullptr;
-                }
-                if (list.size() > 1) {
-                    throw PersistException("Received more than one record.");
-                }
-                txn.commit();
-                return std::move(list.front());
-            } catch (const std::exception &e) {
-                throw PersistException(e.what());
-            }
-        }
+        std::shared_ptr<User> getByLogin(const std::string &login);
 
     public:
-        PostgresUserDAO(std::shared_ptr<PooledConnection> connection_)
-                : AbstractPQXXDao<User, std::string>(std::move(connection_)) {}
+        explicit PostgresUserDAO(std::shared_ptr<PooledConnection> connection_);
+
+    public:
+        class UserCreator: public DaoCreator{
+        public:
+            [[nodiscard]] boost::any create(std::shared_ptr<PooledConnection> pooledConnection)const override;
+        };
     };
 
-    std::string PostgresUserDAO::selectQ = "SELECT * FROM customers ";
-    std::string PostgresUserDAO::selectALlQ = "SELECT * FROM customers;";
-    std::string PostgresUserDAO::insertQ = "INSERT INTO customers (login, password) \nVALUES ($1, $2);";
-    std::string PostgresUserDAO::updateQ = "UPDATE customers SET login=$1, password=$2 WHERE id= $3;";
-    std::string PostgresUserDAO::deleteQ = "DELETE FROM customers WHERE id=$1;";
+
 }
 #endif //TASKHIVE_POSTGRESUSERDAO_H

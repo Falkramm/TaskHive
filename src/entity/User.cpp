@@ -2,7 +2,8 @@
 // Created by daniil on 6/18/23.
 //
 #include <entity/User.h>
-namespace Entity{
+
+namespace Entity {
     std::string User::getLogin() const {
         return login;
     }
@@ -30,8 +31,8 @@ namespace Entity{
     }
 
     User::User(std::string_view id, std::string_view login, std::string_view password) : Entity(id),
-                                                                                                    login(login),
-                                                                                                    password(password) {}
+                                                                                         login(login),
+                                                                                         password(password) {}
 
     User::User(std::string_view login, std::string_view password) : login(login), password(password) {}
 
