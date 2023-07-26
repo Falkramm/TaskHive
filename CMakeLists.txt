@@ -64,7 +64,7 @@ set (SRCS
     src/view/screen/loginscreen.cpp
     CMakeLists.txt
     main.cpp
-    README.md src/dao/connectionPool/connectionPool.cpp src/dao/persistException.cpp src/dao/postgres/postgresUserDAO.cpp src/dao/postgres/postgresTaskDAO.cpp src/dao/postgres/factory.cpp src/service/serviceFactory.cpp src/service/userService.cpp src/service/taskService.cpp)
+    README.md src/dao/connectionPool/connectionPool.cpp src/dao/persistException.cpp src/dao/postgres/postgresUserDAO.cpp src/dao/postgres/postgresTaskDAO.cpp src/dao/postgres/factory.cpp src/service/serviceFactory.cpp src/service/userService.cpp src/service/taskService.cpp src/controller/dispatcher/dispatcher.cpp)
 
 
 
