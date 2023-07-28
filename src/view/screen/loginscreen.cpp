@@ -3,9 +3,9 @@ LogInScreen::LogInScreen(QWidget *parent)
     : QWidget{parent}
 {
     // Создание полей для ввода логина и пароля
-    QLabel* usernameLabel = new QLabel(tr("Логин: "));
+    QLabel* usernameLabel = new QLabel(tr("Login: "));
     loginInput = new QLineEdit();
-    QLabel* passwordLabel = new QLabel(tr("Пароль: "));
+    QLabel* passwordLabel = new QLabel(tr("Password: "));
     passwordInput = new QLineEdit();
     passwordInput->setEchoMode(QLineEdit::Password); // Скрытие символов пароля
     passwordRepeatLabel = new QLabel("Repeat password: ");

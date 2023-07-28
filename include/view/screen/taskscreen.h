@@ -47,11 +47,9 @@ public:
         });
     }
     virtual ~TaskScreen(){
-        delete taskDescriptionWidget;
     }
 protected:
     std::shared_ptr<Entity::Task> task;
-    QWidget * taskDescriptionWidget;
 signals:
 protected slots:
 };

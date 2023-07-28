@@ -30,6 +30,8 @@ public slots:
 
 private:
     Ui::MainScreen *ui;
+    LogInScreen * logInScreen;
+    TaskListScreen * taskListScreen;
 };
 
 

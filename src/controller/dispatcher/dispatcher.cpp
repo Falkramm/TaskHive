@@ -31,7 +31,7 @@ namespace controller {
             std::cout << "The login or password is not recognized\n";
             throw std::runtime_error("The login or password is not recognized");
         }
-        if (user->getPassword() != password) {
+        if (user == nullptr || user->getPassword() != password) {
             std::cout << "The login or password is not recognized\n";
             throw std::runtime_error("The login or password is not recognized");
         }
@@ -61,7 +61,7 @@ namespace controller {
     }
 
     void Dispatcher::signOut() {
-        if (getAuthorizedUser() != nullptr)
+        if (getAuthorizedUser() == nullptr)
             throw new std::runtime_error("The user has already logged out");
         setAuthorizedUser(nullptr);
     }

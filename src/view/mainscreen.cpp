@@ -1,25 +1,33 @@
 #include <view/mainscreen.h>
 #include <sstream>
+
 MainScreen::MainScreen(std::shared_ptr<controller::Dispatcher> dispatcher_, QWidget *parent)
-    : QMainWindow(parent), dispatcher(dispatcher_)
-{
+        : QMainWindow(parent), dispatcher(dispatcher_) {
     logOutAction();
 }
 
-MainScreen::~MainScreen()
-{
+MainScreen::~MainScreen() {
     delete ui;
 }
 
 void MainScreen::logOutAction() {
-    try {
-        dispatcher->signOut();
-    } catch (...) {//TODO need to log
+    if (dispatcher->isAuthorized()) {
+        qDebug() << "Try to logout";
+        try {
+            dispatcher->signOut();
+        } catch (...) {//TODO need to log
+            qDebug() << "Error during logout";
+        }
+
     }
-    LogInScreen *logInScreen = new LogInScreen(this);
-    setCentralWidget(logInScreen);//TODO need to disconnect all signals
-    connect(logInScreen, &LogInScreen::tryToLogIn, this, &MainScreen::logInAction);//TODO need disconnect?
-    connect(logInScreen, &LogInScreen::tryToRegistration, this, &MainScreen::toRegistrationAction);
+    if (!dispatcher->isAuthorized()) {
+        logInScreen = new LogInScreen(this);
+        connect(logInScreen, &LogInScreen::tryToLogIn, this, &MainScreen::logInAction);//TODO need disconnect?
+        connect(logInScreen, &LogInScreen::tryToRegistration, this, &MainScreen::toRegistrationAction);
+        setCentralWidget(logInScreen);//TODO need to disconnect all signals
+    } else {
+        QMessageBox::critical(this, "Error", "Can't logout");
+    }
 }
 
 void MainScreen::logInAction(std::shared_ptr<Entity::User> user) {
@@ -29,12 +37,14 @@ void MainScreen::logInAction(std::shared_ptr<Entity::User> user) {
     try {
         dispatcher->signIn(user);
     } catch (...) {
+        QMessageBox::critical(this, "Error", "Incorrect login or password");
         qDebug() << "Incorrect login or password\n";
     }
-    if(dispatcher->isAuthorized()) {
+    if (dispatcher->isAuthorized()) {
         qDebug() << "User: " << user->getLogin() << " loged\n";
-        TaskListScreen *taskListScreen = new TaskListScreen(dispatcher->getTaskList(), this);
+        taskListScreen = new TaskListScreen(dispatcher->getTaskList(), this);
         setCentralWidget(taskListScreen);
+        connect(taskListScreen, &TaskListScreen::logOut, this, &MainScreen::logOutAction);
     }
 }
 
