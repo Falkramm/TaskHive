@@ -45,6 +45,7 @@ void MainScreen::logInAction(std::shared_ptr<Entity::User> user) {
         taskListScreen = new TaskListScreen(dispatcher->getTaskList(), this);
         setCentralWidget(taskListScreen);
         connect(taskListScreen, &TaskListScreen::logOut, this, &MainScreen::logOutAction);
+        connect(taskListScreen, &TaskListScreen::saveAction, this, &MainScreen::saveAction);
     }
 }
 
@@ -59,4 +60,12 @@ void MainScreen::toRegistrationAction(std::shared_ptr<Entity::User> user) {
         qDebug() << "Login is busy\n";
     }
 
+}
+
+void MainScreen::saveAction(std::vector<std::shared_ptr<Entity::Task>> &tasks) {
+    try{
+        dispatcher->updateTasks(tasks);
+    }catch(...){
+        qDebug() << "Error Can't update";
+    }
 }

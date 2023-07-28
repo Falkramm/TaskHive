@@ -28,6 +28,7 @@ public slots:
 
     void toRegistrationAction(std::shared_ptr<Entity::User> user);
 
+    void saveAction(std::vector<std::shared_ptr<Entity::Task> > &tasks);
 private:
     Ui::MainScreen *ui;
     LogInScreen * logInScreen;

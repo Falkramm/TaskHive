@@ -33,7 +33,7 @@ namespace controller {
         std::vector<std::shared_ptr<Entity::Task> > getTaskList();
 
         void updateTask(std::shared_ptr<Entity::Task> task);
-
+        void updateTasks(std::vector<std::shared_ptr<Entity::Task> > &tasks);
         void removeTask(std::shared_ptr<Entity::Task> task);
 
         std::shared_ptr<Entity::Task> persistTask(std::shared_ptr<Entity::Task> task);

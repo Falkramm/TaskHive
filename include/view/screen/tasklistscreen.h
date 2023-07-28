@@ -56,12 +56,22 @@ public slots:
     };
     void saveTasks(){
         qDebug() << "Try to save";
+        std::vector<std::shared_ptr<Entity::Task> > taskList;
+        taskList.reserve(tasks->size());
+        for(auto taskScreen : *tasks){
+            std::shared_ptr<Entity::Task> task = taskScreen->getTask();
+            taskList.push_back(task);
+        }
+        emit saveAction(taskList);
+        for(auto task : taskList)
+            std::cout << *task << '\n';
     }
 protected:
     QVBoxLayout *button_container;
     QList<TaskScreen *> *tasks;
 signals:
     void logOut();
+    void saveAction(std::vector<std::shared_ptr<Entity::Task> > &tasks);
 protected slots:
 };
 #endif // TASKLISTSCREEN_H

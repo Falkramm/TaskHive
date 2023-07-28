@@ -97,4 +97,24 @@ namespace controller {
     bool Dispatcher::isAuthorized() {
         return getAuthorizedUser() != nullptr;
     }
+
+    void Dispatcher::updateTasks(std::vector<std::shared_ptr<Entity::Task>> &tasks) {
+        if (getAuthorizedUser() == nullptr)
+            throw new std::runtime_error("The user is not logged in");
+        auto factory = getFactory();
+        auto taskService = boost::any_cast<std::shared_ptr<Service::TaskService>>(
+                factory->getService(typeid(Entity::Task).name()));
+        for(auto &task : tasks){
+            std::cout << *task << '\n';
+            try {
+                if (task->getId().empty()) {
+                    task->setKey(getAuthorizedUser()->getId());
+                    *task = *taskService->persist(task);
+                } else
+                    taskService->update(task);
+            } catch(...){
+                std::cout << "Can't update Task\n";
+            }
+        }
+    }
 }
