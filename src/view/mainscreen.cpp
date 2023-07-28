@@ -19,6 +19,7 @@ void MainScreen::logOutAction() {
     LogInScreen *logInScreen = new LogInScreen(this);
     setCentralWidget(logInScreen);//TODO need to disconnect all signals
     connect(logInScreen, &LogInScreen::tryToLogIn, this, &MainScreen::logInAction);//TODO need disconnect?
+    connect(logInScreen, &LogInScreen::tryToRegistration, this, &MainScreen::toRegistrationAction);
 }
 
 void MainScreen::logInAction(std::shared_ptr<Entity::User> user) {
@@ -35,4 +36,17 @@ void MainScreen::logInAction(std::shared_ptr<Entity::User> user) {
         TaskListScreen *taskListScreen = new TaskListScreen(dispatcher->getTaskList(), this);
         setCentralWidget(taskListScreen);
     }
+}
+
+void MainScreen::toRegistrationAction(std::shared_ptr<Entity::User> user) {
+    std::stringstream ss;
+    ss << *user;
+    qDebug() << "Try to registration: " << ss.str();
+    try {
+        dispatcher->signUp(user);
+    } catch (...) {
+        QMessageBox::critical(this, "Error", "Login is busy");
+        qDebug() << "Login is busy\n";
+    }
+
 }

@@ -8,19 +8,28 @@ LogInScreen::LogInScreen(QWidget *parent)
     QLabel* passwordLabel = new QLabel(tr("Пароль: "));
     passwordInput = new QLineEdit();
     passwordInput->setEchoMode(QLineEdit::Password); // Скрытие символов пароля
-
+    passwordRepeatLabel = new QLabel("Repeat password: ");
+    passwordRepeatInput = new QLineEdit();
+    passwordRepeatLabel->setVisible(false);
+    passwordRepeatInput->setVisible(false);
+    passwordRepeatInput->setEchoMode(QLineEdit::Password);
     // Создание кнопки входа
-    sendButton = new QPushButton(tr("Войти"));
+    sendButton = new QPushButton(tr("Send"));
+    actionNameButton = new QPushButton(tr("SignIn"));
 
     // Создание компоновщика для размещения элементов на экране
     QHBoxLayout *layout = new QHBoxLayout();
+    layout->addWidget(actionNameButton);
     layout->addWidget(usernameLabel);
     layout->addWidget(loginInput);
     layout->addWidget(passwordLabel);
     layout->addWidget(passwordInput);
+    layout->addWidget(passwordRepeatLabel);
+    layout->addWidget(passwordRepeatInput);
     layout->addWidget(sendButton);
     setLayout(layout);
     connect(sendButton, &QPushButton::clicked, this, &LogInScreen::PressSendButton);
+    connect(actionNameButton, &QPushButton::clicked, this, &LogInScreen::PressActionNameButton);
 }
 
 LogInScreen::~LogInScreen(){

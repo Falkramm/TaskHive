@@ -48,12 +48,13 @@ namespace controller {
     }
 
     void Dispatcher::signUp(std::shared_ptr<Entity::User> &user) {
+        std::cout << *user << '\n';
         if (getAuthorizedUser() != nullptr)
             throw std::runtime_error("The user is already logged in");
         auto factory = getFactory();
         auto userService = boost::any_cast<std::shared_ptr<Service::UserService>>(
                 factory->getService(typeid(Entity::User).name()));
-        std::string password = user->getPassword();
+        std::cout << *user << '\n';
         if (userService->getByLogin(user->getLogin()) != nullptr)
             throw new std::runtime_error("This login is already occupied");
         user = userService->persist(user);

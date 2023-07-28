@@ -26,6 +26,8 @@ public slots:
 
     void logInAction(std::shared_ptr<Entity::User> user);
 
+    void toRegistrationAction(std::shared_ptr<Entity::User> user);
+
 private:
     Ui::MainScreen *ui;
 };

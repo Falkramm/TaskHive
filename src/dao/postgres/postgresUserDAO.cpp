@@ -64,7 +64,10 @@ namespace DAO{
             pqxx::work txn(*connection);
             pqxx::result rs = txn.exec_params(getSelectQuery() + " WHERE login = $1;", login);
             list = parseResultSet(rs);
-            if (list.empty() || list.size() > 1) {
+            if(list.empty()){
+                return nullptr;
+            }
+            if (list.size() > 1) {
                 throw PersistException("Received more than one record.");
             }
             txn.commit();
