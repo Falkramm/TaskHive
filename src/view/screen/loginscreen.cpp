@@ -2,6 +2,8 @@
 LogInScreen::LogInScreen(QWidget *parent)
     : QWidget{parent}
 {
+    setMinimumSize(610, 100);
+    qDebug() << parentWidget()->font().family().toStdString() << '\n';
     // Создание полей для ввода логина и пароля
     QLabel* usernameLabel = new QLabel(tr("Login: "));
     loginInput = new QLineEdit();
@@ -37,3 +39,32 @@ LogInScreen::~LogInScreen(){
     delete passwordInput;
     delete sendButton;
 }
+
+void LogInScreen::PressSendButton() {
+    if (passwordRepeatLabel->isVisible()) {
+        if(passwordInput->text() == passwordRepeatInput->text())
+                emit tryToRegistration(std::make_shared<Entity::User>(loginInput->text().toStdString(),passwordInput->text().toStdString()));
+        else{
+            QMessageBox::critical(this, "Error", "Passwords don't match");
+        }
+    } else {
+        emit tryToLogIn(std::make_shared<Entity::User>(loginInput->text().toStdString(),passwordInput->text().toStdString()));
+    }
+}
+
+void LogInScreen::PressActionNameButton() {
+    if (passwordRepeatLabel->isVisible()) {
+        actionNameButton->setText("SignIn");
+        passwordRepeatLabel->setVisible(false);
+        passwordRepeatInput->setVisible(false);
+    } else {
+        actionNameButton->setText("SignUp");
+        passwordRepeatLabel->setVisible(true);
+        passwordRepeatInput->setVisible(true);
+    }
+}
+
+void LogInScreen::paintEvent(QPaintEvent *event) {
+    QWidget::paintEvent(event);
+}
+

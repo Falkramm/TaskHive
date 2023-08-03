@@ -20,32 +20,14 @@ protected:
     QPushButton *actionNameButton;
     QLabel *passwordRepeatLabel;
     QLineEdit *passwordRepeatInput;
-signals:
+
+    void paintEvent(QPaintEvent *event) override;
+
 protected slots:
 
-    virtual void PressSendButton() {
-        if (passwordRepeatLabel->isVisible()) {
-            if(passwordInput->text() == passwordRepeatInput->text())
-                emit tryToRegistration(std::make_shared<Entity::User>(loginInput->text().toStdString(),passwordInput->text().toStdString()));
-            else{
-                QMessageBox::critical(this, "Error", "Passwords don't match");
-            }
-        } else {
-            emit tryToLogIn(std::make_shared<Entity::User>(loginInput->text().toStdString(),passwordInput->text().toStdString()));
-        }
-    }
+    virtual void PressSendButton();
 
-    virtual void PressActionNameButton() {
-        if (passwordRepeatLabel->isVisible()) {
-            actionNameButton->setText("SignIn");
-            passwordRepeatLabel->setVisible(false);
-            passwordRepeatInput->setVisible(false);
-        } else {
-            actionNameButton->setText("SignUp");
-            passwordRepeatLabel->setVisible(true);
-            passwordRepeatInput->setVisible(true);
-        }
-    }
+    virtual void PressActionNameButton();
 
 signals:
 

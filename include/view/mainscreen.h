@@ -6,6 +6,8 @@
 #include <view/view.h>
 #include <view/screen/loginscreen.h>
 #include <view/screen/tasklistscreen.h>
+#include <sstream>
+#include <QFont>
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainScreen; }
 QT_END_NAMESPACE
@@ -33,6 +35,8 @@ private:
     Ui::MainScreen *ui;
     LogInScreen * logInScreen;
     TaskListScreen * taskListScreen;
+protected:
+    void paintEvent(QPaintEvent *event) override;
 };
 
 

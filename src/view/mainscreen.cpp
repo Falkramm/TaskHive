@@ -1,9 +1,37 @@
 #include <view/mainscreen.h>
-#include <sstream>
 
 MainScreen::MainScreen(std::shared_ptr<controller::Dispatcher> dispatcher_, QWidget *parent)
         : QMainWindow(parent), dispatcher(dispatcher_) {
     logOutAction();
+
+    QFontDatabase::addApplicationFont(":/fonts/resources/EightBits.ttf");
+    setStyleSheet(  "QWidget { "
+                    "    font: 30px EightBits; "
+                    "}"
+                    "QLineEdit { "
+                    "border-top: 2px solid #9ff; "
+                    "border-left: 2px solid #9ff; "
+                    "border-right: 2px solid #a886dc; "
+                    "border-bottom: 2px solid #a886dc; "
+                    "background-color: #f8fbfc;"
+                    "}"
+                    "QPushButton {"
+                    "border-top: 2px solid #9ff; "
+                    "border-left: 2px solid #9ff; "
+                    "border-right: 2px solid #a886dc; "
+                    "border-bottom: 2px solid #a886dc; "
+                    "background-color: #eae4fc;"
+                    "}"
+                    "QPushButton:pressed {"
+                    "border: 4px dashed black; "
+                    "margin: -2px; "
+                    "}"
+                    "TaskScreen {"
+                    "border: 4px dashed black; "
+                    "}"
+                    );
+//    setMinimumSize(610, 100);
+
 }
 
 MainScreen::~MainScreen() {
@@ -28,6 +56,7 @@ void MainScreen::logOutAction() {
     } else {
         QMessageBox::critical(this, "Error", "Can't logout");
     }
+    adjustSize();
 }
 
 void MainScreen::logInAction(std::shared_ptr<Entity::User> user) {
@@ -47,6 +76,7 @@ void MainScreen::logInAction(std::shared_ptr<Entity::User> user) {
         connect(taskListScreen, &TaskListScreen::logOut, this, &MainScreen::logOutAction);
         connect(taskListScreen, &TaskListScreen::saveAction, this, &MainScreen::saveAction);
     }
+    adjustSize();
 }
 
 void MainScreen::toRegistrationAction(std::shared_ptr<Entity::User> user) {
@@ -59,7 +89,7 @@ void MainScreen::toRegistrationAction(std::shared_ptr<Entity::User> user) {
         QMessageBox::critical(this, "Error", "Login is busy");
         qDebug() << "Login is busy\n";
     }
-
+    adjustSize();
 }
 
 void MainScreen::saveAction(std::vector<std::shared_ptr<Entity::Task>> &tasks) {
@@ -68,4 +98,10 @@ void MainScreen::saveAction(std::vector<std::shared_ptr<Entity::Task>> &tasks) {
     }catch(...){
         qDebug() << "Error Can't update";
     }
+}
+
+void MainScreen::paintEvent(QPaintEvent *event) {
+    QWidget::paintEvent(event);
+    QPainter painter(this);
+    painter.fillRect(rect(), QColor::fromString("#e4feff"));
 }

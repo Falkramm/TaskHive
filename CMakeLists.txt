@@ -63,12 +63,15 @@ set (SRCS
     src/view/screen/loginscreen.cpp
     CMakeLists.txt
     main.cpp
-    README.md src/dao/connectionPool/connectionPool.cpp src/dao/persistException.cpp src/dao/postgres/postgresUserDAO.cpp src/dao/postgres/postgresTaskDAO.cpp src/dao/postgres/factory.cpp src/service/serviceFactory.cpp src/service/userService.cpp src/service/taskService.cpp src/controller/dispatcher/dispatcher.cpp)
+    README.md src/dao/connectionPool/connectionPool.cpp src/dao/persistException.cpp src/dao/postgres/postgresUserDAO.cpp src/dao/postgres/postgresTaskDAO.cpp src/dao/postgres/factory.cpp src/service/serviceFactory.cpp src/service/userService.cpp src/service/taskService.cpp src/controller/dispatcher/dispatcher.cpp
+        src/view/screen/tasklistscreen.cpp
+        src/view/screen/taskscreen.cpp)
 
 
+set(RESOURCE_FILES resourses.qrc)
+qt6_add_resources(RESOURCE_SOURCES ${RESOURCE_FILES})
 
-
-add_executable(${CMAKE_PROJECT_NAME} ${SRCS})
+add_executable(${CMAKE_PROJECT_NAME} ${SRCS} ${RESOURCE_SOURCES})
 
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE pqxx)
