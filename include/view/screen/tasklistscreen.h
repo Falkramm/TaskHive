@@ -16,7 +16,7 @@ public slots:
     void saveTasks();
 protected:
     QVBoxLayout *button_container;
-    QList<TaskScreen *> *tasks;
+    QList<QPair<TaskScreen *, QFrame *> *> *tasks;
 signals:
     void logOut();
     void saveAction(std::vector<std::shared_ptr<Entity::Task> > &tasks);
