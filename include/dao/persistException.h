@@ -14,17 +14,15 @@
 namespace DAO{
     class PersistException : public std::exception {
     public:
-        PersistException() : std::exception() {}
+        PersistException();
 
-        PersistException(std::string_view message) : std::exception(), m_message(message) {}
+        PersistException(std::string_view message);
 
-        PersistException(std::string_view message, const std::exception& cause) : std::exception(cause), m_message(message) {}
+        PersistException(std::string_view message, const std::exception& cause);
 
-        explicit PersistException(const std::exception& cause) : std::exception(cause) {}
+        explicit PersistException(const std::exception& cause);
 
-        [[nodiscard]] const char* what() const noexcept override {
-            return m_message.c_str();
-        }
+        [[nodiscard]] const char* what() const noexcept override;
 
     private:
         std::string m_message;

@@ -9,7 +9,8 @@
 #include <chrono>
 #include <ostream>
 #include <boost/date_time/posix_time/posix_time.hpp>
-namespace Entity{
+
+namespace Entity {
     class Task : public Entity {
     public:
         [[nodiscard]] std::string getKey() const;
@@ -43,12 +44,8 @@ namespace Entity{
 
         Task() = default;
 
-        static std::string timeToString(const std::chrono::system_clock::time_point &point) {
-            auto time_t = std::chrono::system_clock::to_time_t(point);
-            std::stringstream ss;
-            ss << std::put_time(std::gmtime(&time_t), "%Y-%m-%d %H:%M:%S");
-            return ss.str();
-        }
+        static std::string timeToString(const std::chrono::system_clock::time_point &point);
+
     private:
         std::string key;//TODO not user id but user login
         std::string title;

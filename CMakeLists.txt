@@ -31,15 +31,7 @@ set (SRCS
     databases/sql/drop.sql
     databases/sql/generate.sql
     databases/sql/trunc.sql
-    include/controller/Action/action.h
-    include/controller/Action/actionManager.h
     include/controller/dispatcher/dispatcher.h
-    include/controller/Filter/actionFromUriFilter.h
-    include/controller/Filter/encodingFilter.h
-    include/controller/Filter/filter.h
-    include/controller/Filter/filterFactory.h
-    include/controller/Filter/securityFilter.h
-    include/controller/Prepairing/prepare.h
     include/controller/controller.h
     include/dao/DAO.h
     include/dao/connectionPool/connectionPool.h
@@ -52,8 +44,7 @@ set (SRCS
     include/dao/persistException.h
     include/entity/Entity.h
     include/entity/identified.h
-    include/entity/serializable.h
-    include/entity/Task.h
+        include/entity/Task.h
     include/entity/User.h
     include/service/service.h
     include/service/serviceFactory.h
@@ -65,20 +56,22 @@ set (SRCS
     include/view/screen/taskscreen.h
     include/view/screen/tasklistscreen.h
     include/view/screen/loginscreen.h
-    include/view/screen/RegistrationScreen.h
-    src/entity/Entity.cpp
+        src/entity/Entity.cpp
     src/entity/Task.cpp
     src/entity/User.cpp
     src/view/mainscreen.cpp
     src/view/screen/loginscreen.cpp
     CMakeLists.txt
     main.cpp
-    README.md)
+    README.md src/dao/connectionPool/connectionPool.cpp src/dao/persistException.cpp src/dao/postgres/postgresUserDAO.cpp src/dao/postgres/postgresTaskDAO.cpp src/dao/postgres/factory.cpp src/service/serviceFactory.cpp src/service/userService.cpp src/service/taskService.cpp src/controller/dispatcher/dispatcher.cpp
+        src/view/screen/tasklistscreen.cpp
+        src/view/screen/taskscreen.cpp)
 
 
+set(RESOURCE_FILES resourses.qrc)
+qt6_add_resources(RESOURCE_SOURCES ${RESOURCE_FILES})
 
-
-add_executable(${CMAKE_PROJECT_NAME} ${SRCS})
+add_executable(${CMAKE_PROJECT_NAME} ${SRCS} ${RESOURCE_SOURCES})
 
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE pqxx)

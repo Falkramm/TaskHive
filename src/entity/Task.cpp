@@ -3,7 +3,8 @@
 //
 #include <iomanip>
 #include <entity/Task.h>
-namespace Entity{
+
+namespace Entity {
     std::string Task::getKey() const {
         return key;
     }
@@ -75,9 +76,18 @@ namespace Entity{
     std::ostream &operator<<(std::ostream &os, const Task &task) {
         os << static_cast<const Entity &>(task) << " key: " << task.key << " title: " << task.title << " description: "
            << task.description << " completed: " << task.completed << " startDate: " <<
-                boost::posix_time::to_simple_string(boost::posix_time::from_time_t(std::chrono::system_clock::to_time_t(task.startDate)))
-                << " deadlineDate: "
-           << boost::posix_time::to_simple_string(boost::posix_time::from_time_t(std::chrono::system_clock::to_time_t(task.deadlineDate)));
+           boost::posix_time::to_simple_string(
+                   boost::posix_time::from_time_t(std::chrono::system_clock::to_time_t(task.startDate)))
+           << " deadlineDate: "
+           << boost::posix_time::to_simple_string(
+                   boost::posix_time::from_time_t(std::chrono::system_clock::to_time_t(task.deadlineDate)));
         return os;
+    }
+
+    std::string Task::timeToString(const std::chrono::system_clock::time_point &point) {
+        auto time_t = std::chrono::system_clock::to_time_t(point);
+        std::stringstream ss;
+        ss << std::put_time(std::gmtime(&time_t), "%Y-%m-%d %H:%M:%S");
+        return ss.str();
     }
 }

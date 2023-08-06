@@ -14,9 +14,8 @@ namespace Entity{
     private:
         std::string id;
     public:
-        [[nodiscard]] std::string getId() const override{
-            return id;
-        }
+
+        std::string getId() const override;
 
         virtual void setId(std::string_view id_);
 

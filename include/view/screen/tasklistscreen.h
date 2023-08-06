@@ -6,34 +6,22 @@
 class TaskListScreen : public QWidget
 {
     Q_OBJECT
-public:
-    explicit TaskListScreen(const std::vector<std::shared_ptr<Entity::Task>> &tasks_, QWidget *parent = nullptr): QWidget(parent){
-        tasks = new QList<TaskScreen*>();
-        tasks->reserve(tasks_.size());
-        QVBoxLayout *button_container = new QVBoxLayout();
 
-        for(auto task : tasks_){
-            TaskScreen *screen = new TaskScreen(task, this);
-            tasks->push_back(screen);
-            button_container->addWidget(screen);
-        }
-        QScrollArea* scroll_area = new QScrollArea;
-        scroll_area->setWidgetResizable(true);
-        QWidget* scroll_widget = new QWidget;
-        scroll_widget->setLayout(button_container);
-        scroll_area->setWidget(scroll_widget);
-        QVBoxLayout * layout = new QVBoxLayout();
-        layout->addWidget(scroll_area);
-        setLayout(layout);
-        setMinimumHeight(800);
-        setMinimumWidth(800);
-    }
-    virtual ~TaskListScreen(){
-        delete tasks;
-    }
+public:
+    explicit TaskListScreen(const std::vector<std::shared_ptr<Entity::Task>> &tasks_, QWidget *parent = nullptr);
+    virtual ~TaskListScreen();
+public slots:
+    void tryTologOut();;
+    void addNewTask(std::shared_ptr<Entity::Task> task = std::make_shared<Entity::Task>("","","",""));;
+    void saveTasks();
 protected:
-    QList<TaskScreen *> *tasks;
+    QVBoxLayout *button_container;
+    QList<QPair<TaskScreen *, QFrame *> *> *tasks;
 signals:
+    void logOut();
+    void saveAction(std::vector<std::shared_ptr<Entity::Task> > &tasks);
 protected slots:
+
+    void paintEvent(QPaintEvent *event) override;
 };
 #endif // TASKLISTSCREEN_H
