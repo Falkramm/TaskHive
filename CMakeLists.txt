@@ -52,6 +52,7 @@ set (SRCS
     include/service/userService.h
     include/view/view.h
     include/view/mainscreen.h
+
     include/view/screen/screen.h
     include/view/screen/taskscreen.h
     include/view/screen/tasklistscreen.h

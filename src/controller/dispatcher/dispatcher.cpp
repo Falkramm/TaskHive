@@ -109,11 +109,15 @@ namespace controller {
             try {
                 if (task->getId().empty()) {
                     task->setKey(getAuthorizedUser()->getId());
-                    *task = *taskService->persist(task);
+                    try {
+                        *task = *taskService->persist(task);
+                    }catch (...){
+                        std::cout << "Can't persist\n";
+                    }
                 } else
                     taskService->update(task);
-            } catch(...){
-                std::cout << "Can't update Task\n";
+            } catch(std::exception e){
+                std::cout << "Can't update Task " << e.what() << '\n';
             }
         }
     }

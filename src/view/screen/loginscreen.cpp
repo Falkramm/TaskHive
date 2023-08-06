@@ -3,7 +3,6 @@ LogInScreen::LogInScreen(QWidget *parent)
     : QWidget{parent}
 {
     setMinimumSize(610, 100);
-    qDebug() << parentWidget()->font().family().toStdString() << '\n';
     // Создание полей для ввода логина и пароля
     QLabel* usernameLabel = new QLabel(tr("Login: "));
     loginInput = new QLineEdit();
