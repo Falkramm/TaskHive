@@ -35,21 +35,6 @@ namespace DAO{
 
         std::shared_ptr<Task> create() override;
 
-    //    boost::posix_time::ptime pTimeFromString(std::string str)const {
-    //        boost::posix_time::ptime datetime = boost::posix_time::time_from_string(str);
-    //        boost::posix_time::ptime epoch(boost::gregorian::date(1970,1,1));
-    //        boost::posix_time::time_duration duration = datetime - epoch;
-    //        auto start_time = std::chrono::high_resolution_clock::now();
-    //
-    //        // Execute a SELECT query to read data from a table
-    //        pqxx:: my_timestamp = result_set.at(0).at("mytimestamp").as<pqxx::timestamp>();
-    //
-    //        // End the timer and calculate the elapsed time in milliseconds
-    //        auto end_time = std::chrono::high_resolution_clock::now();
-    //        auto elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
-    //
-    //        return datetime;
-    //    }
         std::vector<std::shared_ptr<Task>> parseResultSet(const pqxx::result &rs) const override;
 
     protected:

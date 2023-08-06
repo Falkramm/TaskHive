@@ -28,7 +28,6 @@ void TaskListScreen::addNewTask(std::shared_ptr<Entity::Task> task) {
     button_container->addWidget(newTaskScreen);
     //TODO need to remove lines
     tasks->push_back(pair);
-    qDebug() << "Add new Task: " << tasks->size() << '\n';
 }
 
 void TaskListScreen::tryTologOut() {

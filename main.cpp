@@ -22,7 +22,6 @@ int main(int argc, char *argv[])
 //        std::cout << *user << '\n';
 ////    std::cout << *list << "Error\n";
     QApplication a(argc, argv);
-   // std::shared_ptr<TaskScreen> screen = std::make_shared<TaskScreen>(tservice->getById("1"));
     std::shared_ptr<MainScreen> screen = std::make_shared<MainScreen>();
     screen->show();
     return a.exec();

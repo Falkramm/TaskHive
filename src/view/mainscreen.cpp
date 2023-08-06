@@ -60,9 +60,6 @@ void MainScreen::logOutAction() {
 }
 
 void MainScreen::logInAction(std::shared_ptr<Entity::User> user) {
-    std::stringstream ss;
-    ss << *user;
-    qDebug() << "Try to authorize: " << ss.str();
     try {
         dispatcher->signIn(user);
     } catch (...) {

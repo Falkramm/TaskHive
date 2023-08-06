@@ -39,17 +39,8 @@ namespace DAO {
             task.setTitle(v.at("title").as<std::string>());
             task.setCompleted(v.at("completed").as<bool>());
             task.setDescription(v.at("description").as<std::string>());
-            task.setStartDate(std::chrono::system_clock::now());
-            task.setDeadlineDate(
-                    std::chrono::system_clock::now());//TODO make normal converter from timestamp to c++ types
-            //            task.setStartDate(
-            //                    std::chrono::system_clock::time_point(
-            //                            std::chrono::seconds (std::stoll(v.at("startdate").as<std::string>()))
-            //                    )
-            //            );
-            //            task.setDeadlineDate(std::chrono::system_clock::time_point(
-            //                    std::chrono::seconds(std::stoll(v.at("deadlinedate").as<std::string>()))
-            //            ));
+            task.setStartDate(Entity::Task::stringToTime(v.at("startdate").as<std::string>()));
+            task.setDeadlineDate(Entity::Task::stringToTime(v.at("deadlinedate").as<std::string>()));
             result.emplace_back(std::make_shared<Task>(task));
         }
         return result;

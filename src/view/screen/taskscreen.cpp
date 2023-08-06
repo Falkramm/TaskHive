@@ -13,6 +13,7 @@ std::chrono::system_clock::time_point TaskScreen::toTimePoint(QDateTime *dateTim
 TaskScreen::TaskScreen(std::shared_ptr<Entity::Task> task_, QWidget *parent) : QWidget(parent), task(task_){
     // Создание полей для ввода логина и пароля
     titleEdit = new QLineEdit(tr(task->getTitle().c_str()));
+    titleEdit->setCursorPosition(0);
     startTime = new QDateTime(toQDateTime(task->getStartDate()));
     deadlineTime = new QDateTime(toQDateTime(task->getDeadlineDate()));
     isCompletedBox = new QCheckBox("Completed");
@@ -44,11 +45,6 @@ TaskScreen::TaskScreen(std::shared_ptr<Entity::Task> task_, QWidget *parent) : Q
 }
 
 std::shared_ptr<Entity::Task> TaskScreen::getTask() {
-    //titleEdit;
-    //    QDateTime * startTime;
-    //    QDateTime * deadlineTime;
-    //    QCheckBox * isCompletedBox;
-    //    QTextEdit *descriptionEdit;
     task->setStartDate(toTimePoint(startTime));
     task->setDeadlineDate(toTimePoint(deadlineTime));
     task->setCompleted(isCompletedBox->isChecked());

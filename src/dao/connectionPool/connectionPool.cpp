@@ -14,8 +14,8 @@ namespace DAO {
     }
 
     void PooledConnection::close() {
-        logger_.debug("Closing connection");
-        pqxx::connection::close();
+        logger_.debug("Closing connection");//TODO 1 connection use and i dont know where
+        ConnectionPool::getInstance()->free_connection(shared_from_this());
     }
 
     std::shared_ptr<pqxx::connection> PooledConnection::get_base_connection() {
@@ -82,7 +82,6 @@ namespace DAO {
         logger_.debug(
                 "Got connection from ConnectionPool. Current pool size: " + std::to_string(free_connections_.size()) +
                 " free connections; " + std::to_string(used_connections_.size()) + " used connections");
-
         return connection;
     }
 
@@ -95,7 +94,6 @@ namespace DAO {
         logger_.debug(
                 "Freed connection from ConnectionPool. Current pool size: " + std::to_string(free_connections_.size()) +
                 " free connections; " + std::to_string(used_connections_.size()) + " used connections");
-
         cv_.notify_one();
     }
 

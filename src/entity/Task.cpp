@@ -90,4 +90,18 @@ namespace Entity {
         ss << std::put_time(std::gmtime(&time_t), "%Y-%m-%d %H:%M:%S");
         return ss.str();
     }
+
+    std::chrono::system_clock::time_point Task::stringToTime(const std::string& str) {
+        std::tm tm = {};
+        double fractional_seconds = 0.0;
+        std::istringstream ss(str);
+        ss >> std::get_time(&tm, "%Y-%m-%d %H:%M:%S");
+        ss >> fractional_seconds;
+
+        std::time_t time_t = timegm(&tm);  // Используем timegm для преобразования в UTC
+        std::chrono::system_clock::time_point point = std::chrono::system_clock::from_time_t(time_t);
+        std::chrono::duration<double> duration(fractional_seconds);
+        point += std::chrono::duration_cast<std::chrono::system_clock::duration>(duration);
+        return point;
+    }
 }

@@ -45,7 +45,7 @@ namespace Entity {
         Task() = default;
 
         static std::string timeToString(const std::chrono::system_clock::time_point &point);
-
+        static std::chrono::system_clock::time_point stringToTime(const std::string& str);
     private:
         std::string key;//TODO not user id but user login
         std::string title;
