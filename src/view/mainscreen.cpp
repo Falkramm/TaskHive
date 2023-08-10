@@ -86,7 +86,6 @@ void MainScreen::toRegistrationAction(std::shared_ptr<Entity::User> user) {
         QMessageBox::critical(this, "Error", "Login is busy");
         qDebug() << "Login is busy\n";
     }
-    adjustSize();
 }
 
 void MainScreen::saveAction(std::vector<std::shared_ptr<Entity::Task>> &tasks) {
