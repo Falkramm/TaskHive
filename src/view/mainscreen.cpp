@@ -79,7 +79,7 @@ void MainScreen::logInAction(std::shared_ptr<Entity::User> user) {
 void MainScreen::toRegistrationAction(std::shared_ptr<Entity::User> user) {
     std::stringstream ss;
     ss << *user;
-    qDebug() << "Try to registration: " << ss.str();
+    qDebug() << "Try to authentication: " << ss.str();
     try {
         dispatcher->signUp(user);
     } catch (...) {

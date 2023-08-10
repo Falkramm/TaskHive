@@ -66,7 +66,19 @@ set (SRCS
     main.cpp
     README.md src/dao/connectionPool/connectionPool.cpp src/dao/persistException.cpp src/dao/postgres/postgresUserDAO.cpp src/dao/postgres/postgresTaskDAO.cpp src/dao/postgres/factory.cpp src/service/serviceFactory.cpp src/service/userService.cpp src/service/taskService.cpp src/controller/dispatcher/dispatcher.cpp
         src/view/screen/tasklistscreen.cpp
-        src/view/screen/taskscreen.cpp)
+        src/view/screen/taskscreen.cpp
+        include/controller/action/action.h
+        src/controller/action/actionManager.cpp
+        include/controller/action/actionManager.h
+        src/controller/action/actionManagerFactory.cpp
+        include/controller/action/actionManagerFactory.h
+        src/controller/action/action.cpp
+        include/controller/action/authorizedUserAction.h
+        src/controller/action/actionFactory.cpp
+        include/controller/action/actionFactory.h
+        src/controller/action/authentication/logOutAction.cpp
+        include/controller/action/authentication/logOutAction.h
+)
 
 
 set(RESOURCE_FILES resourses.qrc)
