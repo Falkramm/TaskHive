@@ -16,8 +16,12 @@ namespace controller::Action {
 
     public:
         ActionManager(std::shared_ptr<Service::ServiceFactory> factory_);
+        template<typename OutputType, typename ... InputType>
+        OutputType execute(std::shared_ptr<GenericAction<OutputType, InputType...>>action, InputType ... request){
+            action->setFactory(factory);
+            return action->exec(request...);
+        }
 
-        void execute(std::shared_ptr<GenericAction> action, boost::any request, boost::any response);
 
         void close();
     };

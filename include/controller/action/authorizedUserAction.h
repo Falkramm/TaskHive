@@ -4,12 +4,14 @@
 
 #ifndef TASKHIVE_AUTHORIZEDUSERACTION_H
 #define TASKHIVE_AUTHORIZEDUSERACTION_H
+
 #include <controller/action/action.h>
+
 namespace controller::Action {
-    template<class ... Args>
-    class AuthorizedUserAction : public GenericAction<Args...> {
+    template<typename OutputType, typename ... InputType>
+    class AuthorizedUserAction : public GenericAction<OutputType, InputType...> {
     public:
-        AuthorizedUserAction() : GenericAction<Args...>() {}
+        AuthorizedUserAction() : GenericAction<OutputType, InputType...>() {}
     };
 }
 

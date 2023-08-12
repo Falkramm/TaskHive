@@ -6,14 +6,15 @@
 #define TASKHIVE_LOGOUTACTION_H
 #include <controller/action/authorizedUserAction.h>
 namespace controller::Action{
-    class LogoutAction: public AuthorizedUserAction<> {
+    class LogoutAction: public GenericAction<bool> {
     public:
-        LogoutAction(): AuthorizedUserAction(){}
+        LogoutAction(): GenericAction<bool>(){}
 
-        void exec() override {
+        bool exec() override {
             //auto user = getAuthorizedUser();
             //logger.info(String.format("user \"%s\" is logged out", user.getUsername()));
             setAuthorizedUser(nullptr);
+            return getAuthorizedUser() != nullptr;
         }
     };
 }

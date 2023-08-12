@@ -10,6 +10,7 @@
 namespace controller::Action {
     class ActionManagerFactory {
     public:
+
         static std::shared_ptr<ActionManager> getManager(std::shared_ptr<Service::ServiceFactory> factory);
     };
 }

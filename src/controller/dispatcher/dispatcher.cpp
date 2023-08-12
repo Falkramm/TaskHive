@@ -1,7 +1,5 @@
 #include <controller/dispatcher/dispatcher.h>
 
-#include <utility>
-
 namespace controller {
     std::shared_ptr<Service::ServiceFactory> Dispatcher::getFactory() {
         return std::make_shared<Service::ServiceFactory>();
@@ -60,11 +58,7 @@ namespace controller {
         user = userService->persist(user);
     }
 
-    void Dispatcher::signOut() {
-        if (getAuthorizedUser() == nullptr)
-            throw new std::runtime_error("The user has already logged out");
-        setAuthorizedUser(nullptr);
-    }
+
 
     std::vector<std::shared_ptr<Entity::Task> > Dispatcher::getTaskList() {
         if (getAuthorizedUser() == nullptr)

@@ -4,7 +4,7 @@
 
 #include "controller/action/actionManagerFactory.h"
 
-std::shared_ptr<ActionManager>
+std::shared_ptr<controller::Action::ActionManager>
 controller::Action::ActionManagerFactory::getManager(std::shared_ptr<Service::ServiceFactory> factory) {
     return std::make_shared<ActionManager>(factory);
 }

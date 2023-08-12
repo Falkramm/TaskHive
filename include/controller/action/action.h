@@ -14,7 +14,7 @@
 
 
     namespace controller::Action {
-        template<class ... Args>
+        template<typename OutputType, typename ... InputType>
         class GenericAction {
         private:
             std::shared_ptr<Entity::User> authorizedUser;
@@ -23,23 +23,32 @@
         protected:
             std::shared_ptr<Service::ServiceFactory> factory;
         public:
+            void setAuthorizedUser(std::shared_ptr<Entity::User> authorizedUser_) {
+                this->authorizedUser = std::move(authorizedUser_);
+            }
 
-            void setAuthorizedUser(std::shared_ptr<Entity::User> authorizedUser_);
+            std::string_view getName() {
+                return name;
+            }
 
-            std::string_view getName();
+            void setName(std::string_view name_) {
+                this->name = name_;
+            }
 
-            void setName(std::string_view name_);
+            void setFactory(std::shared_ptr<Service::ServiceFactory> factory_) {
+                this->factory = std::move(factory_);
+            }
 
-            void setFactory(std::shared_ptr<Service::ServiceFactory> factory_);
+            std::shared_ptr<Entity::User> getAuthorizedUser() const {
+                return authorizedUser;
+            }
 
-
-            virtual void exec(Args ... ) = 0;
-            std::shared_ptr<Entity::User> getAuthorizedUser() const;
+            virtual OutputType exec(InputType ...) = 0;
         };
-        template<class ... Args>
+        template<typename OutputType, typename ... InputType>
         class ActionCreator{
         public:
-            virtual std::shared_ptr<GenericAction<Args...>> create() = 0;
+            virtual std::shared_ptr<GenericAction<OutputType, InputType ...>> create() = 0;
         };
     }
 

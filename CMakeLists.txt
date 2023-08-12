@@ -72,7 +72,6 @@ set (SRCS
         include/controller/action/actionManager.h
         src/controller/action/actionManagerFactory.cpp
         include/controller/action/actionManagerFactory.h
-        src/controller/action/action.cpp
         include/controller/action/authorizedUserAction.h
         src/controller/action/actionFactory.cpp
         include/controller/action/actionFactory.h
